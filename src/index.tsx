@@ -36,8 +36,8 @@ export interface AuthProviderProps {
 export function initReactQueryAuth<User = unknown, Error = unknown>(
   config: AuthProviderConfig<User, Error>
 ) {
-  const AuthContext = React.createContext<AuthContextValue<User, Error> | null>(
-    null
+  const AuthContext = React.createContext<AuthContextValue<User, Error>>(
+    {} as AuthContextValue<User, Error>
   );
   AuthContext.displayName = 'AuthContext';
 
@@ -147,7 +147,7 @@ export function initReactQueryAuth<User = unknown, Error = unknown>(
 
   function useAuth() {
     const context = React.useContext(AuthContext);
-    if (context === undefined) {
+    if (!context) {
       throw new Error(`useAuth must be used within an AuthProvider`);
     }
     return context;
