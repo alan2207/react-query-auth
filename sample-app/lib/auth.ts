@@ -5,7 +5,13 @@ import {
   loginWithEmailAndPassword,
   User,
 } from '../api';
-import { storage, handleUserResponse } from '../utils';
+import { storage } from '../utils';
+
+async function handleUserResponse(data) {
+  const { jwt, user } = data;
+  storage.setToken(jwt);
+  return user;
+}
 
 async function loadUser() {
   let user = null;

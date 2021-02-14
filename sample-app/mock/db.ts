@@ -1,4 +1,4 @@
-import { User } from './api';
+import { User } from '../api';
 
 const users: Record<string, User> = JSON.parse(
   window.localStorage.getItem('db_users') || '{}'
