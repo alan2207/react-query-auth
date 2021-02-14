@@ -14,21 +14,31 @@ Thanks to react-query we have been able to reduce our codebases by a lot by cach
 
 ## The solution
 
-This solution is inspired by how the authentication has been done in the [bookshelf](https://github.com/kentcdodds/bookshelf) app made by Kent C. Dodds. The principles are very similar, with one difference. Since we use react-query for most of our applications, we can utilize its caching system to cache the user data as well. This way, we can invalidate and refetch the user data whenever we need that without complicating the codebase.
+This solution is inspired by how the authentication has been done in the [bookshelf](https://github.com/kentcdodds/bookshelf) app made by Kent C. Dodds. The principles are very similar, with one difference. Since we are already using react-query for most of our applications, we can utilize its caching system to cache the user data as well. This way, we can invalidate and refetch the user data whenever we need that without complicating the codebase.
 
 ## Table of Contents
 
+- [Demo](#demo)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Setup](#setup)
 - [Usage](#usage)
 - [API](#api)
 - [Contributing](#contributing)
 - [License](#license)
 
+## Demo:
+
+[CodeSandbox](https://codesandbox.io/s/react-query-auth-demo-fvvvt)
+
+It is also possible to try out the sample app locally via storybook by running following command:
+
+```
+$ npm run storybook
+```
+
 ## Prerequisites
 
-You should already have `react-query` library installed and configured.
+It is required to have `react-query` library installed and configured.
 
 ## Installation
 
@@ -42,9 +52,9 @@ Or if you use Yarn:
 $ yarn add react-query-auth
 ```
 
-## Setup
+## Usage
 
-First of all, we need to initalize our `AuthProvider`.
+First of all, `AuthProvider` and `useAuth` must be initialized and exported.
 
 ```ts
 // src/lib/auth.ts
@@ -52,13 +62,15 @@ First of all, we need to initalize our `AuthProvider`.
 import { initReactQueryAuth } from 'react-query-auth';
 import { loginUser, loginFn, registerFn, logoutFn } from '...';
 
-// typescript users can provide typings for the user
 interface User {
   id: string;
   name: string;
 }
 
-// adjust the configuration based on your app needs
+interface Error {
+  message: string;
+}
+
 const authConfig = {
   loadUser,
   loginFn,
@@ -66,13 +78,12 @@ const authConfig = {
   logoutFn,
 };
 
-// finally the provider and the hook is created
-export const { AuthProvider, useAuth } = initReactQueryAuth<User>(authConfig);
+export const { AuthProvider, useAuth } = initReactQueryAuth<User, Error>(
+  authConfig
+);
 ```
 
-## Usage
-
-This is how everything is wired up.
+`AuthProvider` should be rendered inside the provider from `react-query`.
 
 ```ts
 // src/App.tsx
@@ -81,21 +92,20 @@ import { QueryClient } from 'react-query';
 import { QueryClientProvider } from 'react-query/devtools';
 import { AuthProvider } from 'src/lib/auth';
 
-// we need to
 const queryClient = new QueryClient();
 
 export const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        {//the rest of your app goes here}
+        {//the rest the app goes here}
       </AuthProvider>
     </QueryClientProvider>
   );
 };
 ```
 
-And now we can access the user info from any component rendered inside via the `useAuth` hook:
+Then the user data is accessible from any component rendered inside the provider via the `useAuth` hook:
 
 ```ts
 // src/components/UserInfo.tsx
@@ -167,7 +177,7 @@ export const { AuthProvider, useAuth } = initReactQueryAuth<User, Error>({
 - `renderLoader: () => React.ReactNode`
 
   - function that returns ui for the loader
-  - defaults to `() =><div>Loading...</div>`
+  - defaults to `() => <div>Loading...</div>`
 
 - `renderError: (error: Error) => React.ReactNode`
 
@@ -204,8 +214,6 @@ export const { AuthProvider, useAuth } = initReactQueryAuth<User, Error>({
   - function triggered on logout error
   - defaults to `() => {}`
 
-[Checkout usage example for more info]()
-
 #### `AuthProvider`
 
 The provider wraps the app and allows `useAuth` hook data to be available across the app. No further configuration required.
@@ -231,18 +239,6 @@ The hook allows access of the user data across the app.
 ```ts
 import { useAuth } from 'src/lib/auth';
 
-export interface AuthContextValue<User, Error> {
-  user: User | undefined;
-  login: (data: any) => Promise<User>;
-  logout: () => Promise<boolean>;
-  register: (data: any) => Promise<User>;
-  refetch: (options: {
-    throwOnError: boolean;
-    cancelRefetch: boolean;
-  }) => Promise<UseQueryResult>;
-  error: Error | null;
-}
-
 export const UserInfo = () => {
   const { user, login, logout, register, error, refetch } = useAuth();
   return <div>My Name is {user.name}</div>;
@@ -254,7 +250,7 @@ export const UserInfo = () => {
 - `user: User | undefined`
 
   - user data that was retrieved from server
-  - typings for it are provided by passing them to `initReactQueryAuth`
+  - type can be provided by passing it to `initReactQueryAuth`
 
 - `login: (data: any) => Promise<User>`
 
@@ -274,7 +270,7 @@ export const UserInfo = () => {
 
 - `error: Error | null`
   - error object
-  - typings for it are provided by passing them to `initReactQueryAuth`
+  - type can be provided by passing it to `initReactQueryAuth`
 
 ## Contributing
 
