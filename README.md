@@ -1,30 +1,22 @@
-<h1 align="center">
-  react-query-auth
-  <br>
-  
-</h1>
+# react-query-auth
 
 [![NPM](https://img.shields.io/npm/v/react-query-auth.svg)](https://www.npmjs.com/package/react-query-auth)
 
-<p align="center">Authenticate your react applications easily with react-query.</p>
+Authenticate your react applications easily with react-query.
 
-## The Problem
+## Introduction
 
-Thanks to react-query we have been able to reduce our codebases by a lot by caching server state with it. However, we still have to think about where to store the user data. The user data can be considered as a global application state because we need to access it from lots of places in the application. On the other hand, it is also a server state since all the user data is expected to arrive from a server. This is the reason why we often unnecessarily reach out for a global state library such as redux, mobx, etc. These libraries are great and have their purpose, but they are redundant for just storing the user data.
-
-## The solution
-
-This solution is inspired by how the authentication has been done in the [bookshelf](https://github.com/kentcdodds/bookshelf) app made by Kent C. Dodds. The principles are very similar, with one difference. Since we are already using react-query for most of our applications, we can utilize its caching system to cache the user data as well. This way, we can invalidate and refetch the user data whenever we need that without complicating the codebase.
+Thanks to react-query we have been able to reduce our codebases by a lot by caching server state with it. However, we still have to think about where to store the user data. The user data can be considered as a global application state because we need to access it from lots of places in the application. On the other hand, it is also a server state since all the user data is expected to arrive from a server. With this library, we can manage user authentication in an easy way. It is agnostic of the method you are using for authenticating your application, it can be adjusted according to the API it is being used against. It just needs the configuration to be provided and the rest will be set up automatically.
 
 ## Table of Contents
 
-- [Demo](#demo)
+- [Demo:](#demo)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
 - [API](#api)
 - [Contributing](#contributing)
-- [License](#license)
+- [LICENSE](#license)
 
 ## Demo:
 
@@ -78,12 +70,15 @@ const authConfig = {
   logoutFn,
 };
 
-export const { AuthProvider, useAuth } = initReactQueryAuth<User, Error>(
-  authConfig
-);
+export const { AuthProvider, useAuth } = initReactQueryAuth<
+  User,
+  Error,
+  LoginCredentials,
+  RegisterCredentials
+>(authConfig);
 ```
 
-`AuthProvider` should be rendered inside the provider from `react-query`.
+`AuthProvider` should be rendered inside the `QueryClientProvider` from `react-query`.
 
 ```ts
 // src/App.tsx
@@ -131,14 +126,8 @@ export const { AuthProvider, useAuth } = initReactQueryAuth<User, Error>({
   loginFn,
   registerFn,
   logoutFn,
-  renderLoader,
-  renderError,
-  onLoginSuccess,
-  onRegisterSuccess,
-  onLogoutSuccess,
-  onLoginError,
-  onRegisterError,
-  onLogoutError,
+  LoaderComponent,
+  ErrorComponent,
 });
 ```
 
@@ -149,17 +138,17 @@ export const { AuthProvider, useAuth } = initReactQueryAuth<User, Error>({
   - key that is being used by react-query.
   - defaults to `'auth-user'`
 
-- `loadUser: (data:unknown) => Promise<User>`
+- `loadUser: (data:any) => Promise<User>`
 
   - **Required**
   - function that handles user profile fetching
 
-- `loginFn: (data:unknown) => Promise<User>`
+- `loginFn: (data:any) => Promise<User>`
 
   - **Required**
   - function that handles user login
 
-- `registerFn: (data:unknown) => Promise<User>`
+- `registerFn: (data:any) => Promise<User>`
 
   - **Required**
   - function that handles user registration
@@ -169,50 +158,20 @@ export const { AuthProvider, useAuth } = initReactQueryAuth<User, Error>({
   - **Required**
   - function that handles user logout
 
-- `logoutFn: (data:unknown) => Promise<any>`
+- `logoutFn: () => Promise<any>`
 
   - **Required**
   - function that handles user logout
 
-- `renderLoader: () => React.ReactNode`
+- `LoaderComponent: () => React.ReactNode`
 
-  - function that returns ui for the loader
+  - component for the loader
   - defaults to `() => <div>Loading...</div>`
 
-- `renderError: (error: Error) => React.ReactNode`
+- `ErrorComponent: (error: Error) => React.ReactNode`
 
-  - function that returns ui for the error
+  - component for the error
   - defaults to `(error) => (<div style={{color: 'tomato'}}>{JSON.stringify(error, null, 2)}</div>)`
-
-- `onLoginSuccess: (user: User) => void || Promise<void>`
-
-  - function triggered after successful login
-  - defaults to `() => {}`
-
-- `onRegisterSuccess: (user: User) => void || Promise<void>`
-
-  - function triggered after successful registration
-  - defaults to `() => {}`
-
-- `onLogoutSuccess: (user: User) => void || Promise<void>`
-
-  - function triggered after successful logout
-  - defaults to `() => {}`
-
-- `onLoginError: (error: Error) => void`
-
-  - function triggered on login error
-  - defaults to `() => {}`
-
-* `onRegisterError: (error: Error) => void`
-
-  - function triggered on registration error
-  - defaults to `() => {}`
-
-- `onLogoutError: (error: Error) => void`
-
-  - function triggered on logout error
-  - defaults to `() => {}`
 
 #### `AuthProvider`
 
@@ -250,23 +209,35 @@ export const UserInfo = () => {
 - `user: User | undefined`
 
   - user data that was retrieved from server
-  - type can be provided by passing it to `initReactQueryAuth`
+  - type can be provided by passing it to `initReactQueryAuth` generic
 
-- `login: (data: any) => Promise<User>`
+- `login: (variables: TVariables, { onSuccess, onSettled, onError }) => Promise<TData>`
 
   - function to login the user
 
-- `logout: (data: any) => Promise<boolean>`
+- `logout: (variables: TVariables, { onSuccess, onSettled, onError }) => Promise<TData>`
 
   - function to logout the user
 
-- `register: (data: any) => Promise<User>`
+- `register: (variables: TVariables, { onSuccess, onSettled, onError }) => Promise<TData>`
 
   - function to register the user
 
-- `refetch: (options: {throwOnError: boolean; cancelRefetch: boolean;}) => Promise<UseQueryResult>`
+- `isLoggingIn: boolean`
 
-  - function for refetching the user data. this can also be done by invalidate it's query by the key
+  - checks if is logging in is in progress
+
+- `isLoggingOut: boolean`
+
+  - checks if is logging out is in progress
+
+- `isRegistering: boolean`
+
+  - checks if is registering in is in progress
+
+- `refetchUser: (options?: RefetchOptions | undefined) => Promise<QueryObserverResult<User, Error>>`
+
+  - function for refetching user data. this can also be done by invalidating its query by `key`
 
 - `error: Error | null`
   - error object

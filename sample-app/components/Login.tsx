@@ -1,10 +1,10 @@
 import React from 'react';
 import { useForm } from '../hooks/useForm';
-import { useAuth } from '../lib/auth';
+import { LoginCredentials, useAuth } from '../lib/auth';
 
 export function Login() {
   const { login } = useAuth();
-  const { values, onChange } = useForm();
+  const { values, onChange } = useForm<LoginCredentials>();
   const [error, setError] = React.useState(null);
   return (
     <div>

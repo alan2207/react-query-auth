@@ -1,31 +1,39 @@
 import React from 'react';
-import { useQuery, useQueryClient, UseQueryResult } from 'react-query';
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  UseMutateAsyncFunction,
+  QueryObserverResult,
+  RefetchOptions,
+} from 'react-query';
 
-export interface AuthProviderConfig<User, Error> {
+export interface AuthProviderConfig<User = unknown, Error = unknown> {
   key?: string;
-  loadUser: (data: unknown) => Promise<User>;
-  loginFn: (data: unknown) => Promise<User>;
-  registerFn: (data: unknown) => Promise<User>;
+  loadUser: (data: any) => Promise<User>;
+  loginFn: (data: any) => Promise<User>;
+  registerFn: (data: any) => Promise<User>;
   logoutFn: () => Promise<any>;
-  renderLoader?: () => React.ReactNode;
-  renderError?: (error: Error) => React.ReactNode;
-  onLoginSuccess?: (user: User) => void | Promise<void>;
-  onRegisterSuccess?: (user: User) => void | Promise<void>;
-  onLogoutSuccess?: () => void | Promise<void>;
-  onLoginError?: (error: Error) => void;
-  onRegisterError?: (error: Error) => void;
-  onLogoutError?: (error: Error) => void;
+  LoaderComponent?: () => JSX.Element;
+  ErrorComponent?: ({ error }: { error: Error | null }) => JSX.Element;
 }
 
-export interface AuthContextValue<User, Error> {
+export interface AuthContextValue<
+  User = unknown,
+  Error = unknown,
+  LoginCredentials = unknown,
+  RegisterCredentials = unknown
+> {
   user: User | undefined;
-  login: (data: any) => Promise<User>;
-  logout: () => Promise<boolean>;
-  register: (data: any) => Promise<User>;
-  refetch: (options: {
-    throwOnError: boolean;
-    cancelRefetch: boolean;
-  }) => Promise<UseQueryResult>;
+  login: UseMutateAsyncFunction<User, any, LoginCredentials>;
+  logout: UseMutateAsyncFunction<any, any, void, any>;
+  register: UseMutateAsyncFunction<User, any, RegisterCredentials>;
+  isLoggingIn: boolean;
+  isLoggingOut: boolean;
+  isRegistering: boolean;
+  refetchUser: (
+    options?: RefetchOptions | undefined
+  ) => Promise<QueryObserverResult<User, Error>>;
   error: Error | null;
 }
 
@@ -33,12 +41,18 @@ export interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-export function initReactQueryAuth<User = unknown, Error = unknown>(
-  config: AuthProviderConfig<User, Error>
-) {
-  const AuthContext = React.createContext<AuthContextValue<User, Error>>(
-    {} as AuthContextValue<User, Error>
-  );
+export function initReactQueryAuth<
+  User = unknown,
+  Error = unknown,
+  LoginCredentials = unknown,
+  RegisterCredentials = unknown
+>(config: AuthProviderConfig<User, Error>) {
+  const AuthContext = React.createContext<AuthContextValue<
+    User,
+    Error,
+    LoginCredentials,
+    RegisterCredentials
+  > | null>(null);
   AuthContext.displayName = 'AuthContext';
 
   const {
@@ -47,16 +61,10 @@ export function initReactQueryAuth<User = unknown, Error = unknown>(
     registerFn,
     logoutFn,
     key = 'auth-user',
-    renderLoader = () => <div>Loading...</div>,
-    renderError = (error: Error) => (
+    LoaderComponent = () => <div>Loading...</div>,
+    ErrorComponent = (error: any) => (
       <div style={{ color: 'tomato' }}>{JSON.stringify(error, null, 2)}</div>
     ),
-    onLoginSuccess = () => {},
-    onLoginError = () => {},
-    onRegisterSuccess = () => {},
-    onRegisterError = () => {},
-    onLogoutSuccess = () => {},
-    onLogoutError = () => {},
   } = config;
 
   function AuthProvider({ children }: AuthProviderProps): JSX.Element {
@@ -76,64 +84,62 @@ export function initReactQueryAuth<User = unknown, Error = unknown>(
     });
 
     const setUser = React.useCallback(
-      data => queryClient.setQueryData(key, data),
-      [key, queryClient]
+      (data: User) => queryClient.setQueryData(key, data),
+      [queryClient]
     );
 
-    const login = React.useCallback(
-      async data => {
-        try {
-          const user = await loginFn(data);
-          setUser(user);
-          onLoginSuccess(user);
-          return user;
-        } catch (error) {
-          onLoginError(error);
-          return Promise.reject(error);
-        }
+    const loginMutation = useMutation({
+      mutationFn: loginFn,
+      onSuccess: user => {
+        setUser(user);
       },
-      [loginFn, onLoginError, onLoginSuccess, setUser]
-    );
+    });
 
-    const register = React.useCallback(
-      async data => {
-        try {
-          const user = await registerFn(data);
-          setUser(user);
-          onRegisterSuccess(user);
-          return user;
-        } catch (error) {
-          onRegisterError(error);
-          return Promise.reject(error);
-        }
+    const registerMutation = useMutation({
+      mutationFn: registerFn,
+      onSuccess: user => {
+        setUser(user);
       },
-      [onRegisterError, onRegisterSuccess, registerFn, setUser]
-    );
+    });
 
-    const logout = React.useCallback(async () => {
-      try {
-        await logoutFn();
-        setUser(null);
+    const logoutMutation = useMutation({
+      mutationFn: logoutFn,
+      onSuccess: () => {
         queryClient.clear();
-        onLogoutSuccess();
-        return true;
-      } catch (error) {
-        onLogoutError(error);
-        return Promise.reject(error);
-      }
-    }, [logoutFn, onLogoutError, onLogoutSuccess, queryClient, setUser]);
+      },
+    });
 
     const value = React.useMemo(
-      () => ({ user, login, logout, register, error, refetch }),
-      [login, logout, user, register, error, refetch]
+      () => ({
+        user,
+        error,
+        refetchUser: refetch,
+        login: loginMutation.mutateAsync,
+        isLoggingIn: loginMutation.isLoading,
+        logout: logoutMutation.mutateAsync,
+        isLoggingOut: logoutMutation.isLoading,
+        register: registerMutation.mutateAsync,
+        isRegistering: registerMutation.isLoading,
+      }),
+      [
+        user,
+        error,
+        refetch,
+        loginMutation.mutateAsync,
+        loginMutation.isLoading,
+        logoutMutation.mutateAsync,
+        logoutMutation.isLoading,
+        registerMutation.mutateAsync,
+        registerMutation.isLoading,
+      ]
     );
 
     if (isLoading || isIdle) {
-      return <>{renderLoader()}</>;
+      return <LoaderComponent />;
     }
 
     if (error) {
-      return <>{renderError(error)}</>;
+      return <ErrorComponent error={error} />;
     }
 
     if (isSuccess) {
@@ -142,7 +148,7 @@ export function initReactQueryAuth<User = unknown, Error = unknown>(
       );
     }
 
-    return <>Unhandled status: {status}</>;
+    return <div>Unhandled status: {status}</div>;
   }
 
   function useAuth() {

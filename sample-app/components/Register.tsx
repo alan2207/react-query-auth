@@ -1,10 +1,10 @@
 import React from 'react';
-import { useAuth } from '../lib/auth';
+import { RegisterCredentials, useAuth } from '../lib/auth';
 import { useForm } from '../hooks/useForm';
 
 export function Register() {
   const { register } = useAuth();
-  const { values, onChange } = useForm();
+  const { values, onChange } = useForm<RegisterCredentials>();
   const [error, setError] = React.useState(null);
 
   return (
