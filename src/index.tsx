@@ -14,6 +14,7 @@ export interface AuthProviderConfig<User = unknown, Error = unknown> {
   loginFn: (data: any) => Promise<User>;
   registerFn: (data: any) => Promise<User>;
   logoutFn: () => Promise<any>;
+  waitInitial?: boolean;
   LoaderComponent?: () => JSX.Element;
   ErrorComponent?: ({ error }: { error: Error | null }) => JSX.Element;
 }
@@ -61,6 +62,7 @@ export function initReactQueryAuth<
     registerFn,
     logoutFn,
     key = 'auth-user',
+    waitInitial = true,
     LoaderComponent = () => <div>Loading...</div>,
     ErrorComponent = (error: any) => (
       <div style={{ color: 'tomato' }}>{JSON.stringify(error, null, 2)}</div>
@@ -134,18 +136,18 @@ export function initReactQueryAuth<
       ]
     );
 
+    if (isSuccess || !waitInitial) {
+      return (
+        <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+      );
+    }
+
     if (isLoading || isIdle) {
       return <LoaderComponent />;
     }
 
     if (error) {
       return <ErrorComponent error={error} />;
-    }
-
-    if (isSuccess) {
-      return (
-        <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-      );
     }
 
     return <div>Unhandled status: {status}</div>;
@@ -159,5 +161,5 @@ export function initReactQueryAuth<
     return context;
   }
 
-  return { AuthProvider, useAuth };
+  return { AuthProvider, AuthConsumer: AuthContext.Consumer, useAuth };
 }

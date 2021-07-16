@@ -116,7 +116,7 @@ export const UserInfo = () => {
 
 ### `initReactQueryAuth`
 
-Function that creates `AuthProvider` and `useAuth`.
+Function that initializes and returns `AuthProvider`, `AuthConsumer` and `useAuth`.
 
 ```ts
 // src/lib/auth.ts
@@ -126,6 +126,7 @@ export const { AuthProvider, useAuth } = initReactQueryAuth<User, Error>({
   loginFn,
   registerFn,
   logoutFn,
+  waitInitial,
   LoaderComponent,
   ErrorComponent,
 });
@@ -162,6 +163,11 @@ export const { AuthProvider, useAuth } = initReactQueryAuth<User, Error>({
 
   - **Required**
   - function that handles user logout
+
+- `waitInitial: boolean`
+
+  - Flag for checking if the provider should show `LoaderComponent` while fetching the user. If set to `false` it will fetch the user in the background.
+  - defaults to `true`
 
 - `LoaderComponent: () => React.ReactNode`
 
@@ -204,7 +210,7 @@ export const UserInfo = () => {
 };
 ```
 
-##### returns
+##### returns context value:
 
 - `user: User | undefined`
 
@@ -242,6 +248,27 @@ export const UserInfo = () => {
 - `error: Error | null`
   - error object
   - type can be provided by passing it to `initReactQueryAuth`
+
+### `AuthConsumer`
+
+Exposes the same context value like the `useAuth` hook but as render prop.
+
+```ts
+import { AuthProvider, AuthConsumer } from './lib/auth';
+import { ReactQueryProvider } from './lib/react-query';
+
+export const App = () => {
+  return (
+    <ReactQueryProvider>
+      <AuthProvider>
+        <AuthConsumer>
+          {({ user }) => <div>{JSON.stringify(user) || 'No User Found'}</div>}
+        </AuthConsumer>
+      </AuthProvider>
+    </ReactQueryProvider>
+  );
+};
+```
 
 ## Contributing
 

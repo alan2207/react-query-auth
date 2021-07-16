@@ -57,11 +57,11 @@ const authConfig = {
   logoutFn,
 };
 
-const { AuthProvider, useAuth } = initReactQueryAuth<
+const { AuthProvider, AuthConsumer, useAuth } = initReactQueryAuth<
   User,
   any,
   LoginCredentials,
   RegisterCredentials
 >(authConfig);
 
-export { AuthProvider, useAuth };
+export { AuthProvider, AuthConsumer, useAuth };
