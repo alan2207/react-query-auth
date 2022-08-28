@@ -1,6 +1,6 @@
 import { storage } from './utils';
 
-interface AuthResponse {
+export interface AuthResponse {
   user: User;
   jwt: string;
 }
@@ -11,7 +11,7 @@ export interface User {
   name?: string;
 }
 
-export async function handleApiResponse(response) {
+export async function handleApiResponse(response: Response) {
   const data = await response.json();
 
   if (response.ok) {
@@ -21,30 +21,24 @@ export async function handleApiResponse(response) {
   }
 }
 
-export async function getUserProfile() {
-  return await fetch('/auth/me', {
+export function getUserProfile(): Promise<{ user: User | undefined }> {
+  return fetch('/auth/me', {
     headers: {
       Authorization: storage.getToken(),
     },
   }).then(handleApiResponse);
 }
 
-export async function loginWithEmailAndPassword(data): Promise<AuthResponse> {
-  return window
-    .fetch('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
-    .then(handleApiResponse);
+export function loginWithEmailAndPassword(data): Promise<AuthResponse> {
+  return fetch('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }).then(handleApiResponse);
 }
 
-export async function registerWithEmailAndPassword(
-  data
-): Promise<AuthResponse> {
-  return window
-    .fetch('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
-    .then(handleApiResponse);
+export function registerWithEmailAndPassword(data): Promise<AuthResponse> {
+  return fetch('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }).then(handleApiResponse);
 }

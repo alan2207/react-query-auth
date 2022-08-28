@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Meta, Story } from '@storybook/react';
 import SampleApp from '../sample-app';
 import { handlers } from '../sample-app/mock/handlers';

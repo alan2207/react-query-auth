@@ -1,9 +1,10 @@
+import * as React from 'react';
 import { initReactQueryAuth } from '../../src';
 import {
   getUserProfile,
   registerWithEmailAndPassword,
   loginWithEmailAndPassword,
-  User,
+  AuthResponse,
 } from '../api';
 import { storage } from '../utils';
 
@@ -18,20 +19,15 @@ export type RegisterCredentials = {
   password: string;
 };
 
-async function handleUserResponse(data) {
+async function handleUserResponse(data: AuthResponse) {
   const { jwt, user } = data;
   storage.setToken(jwt);
   return user;
 }
 
 async function loadUser() {
-  let user = null;
-
-  if (storage.getToken()) {
-    const data = await getUserProfile();
-    user = data;
-  }
-  return user;
+  const { user } = await getUserProfile();
+  return user ?? null;
 }
 
 async function loginFn(data: LoginCredentials) {
@@ -46,22 +42,22 @@ async function registerFn(data: RegisterCredentials) {
   return user;
 }
 
-async function logoutFn() {
-  await storage.clearToken();
+function logoutFn() {
+  storage.clearToken();
 }
 
-const authConfig = {
+export const {
+  AuthProvider,
+  AuthConsumer,
+  AuthLoader,
+  useAuth,
+} = initReactQueryAuth({
   loadUser,
   loginFn,
   registerFn,
   logoutFn,
-};
-
-const { AuthProvider, AuthConsumer, useAuth } = initReactQueryAuth<
-  User,
-  any,
-  LoginCredentials,
-  RegisterCredentials
->(authConfig);
-
-export { AuthProvider, AuthConsumer, useAuth };
+  userQueryOptions: {
+    refetchOnWindowFocus: false,
+    retry: 0,
+  },
+});

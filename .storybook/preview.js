@@ -1,7 +1,7 @@
 import { addDecorator } from '@storybook/react';
-import { initializeWorker, mswDecorator } from 'msw-storybook-addon';
+import { initialize, mswDecorator } from 'msw-storybook-addon';
 
-initializeWorker();
+initialize();
 addDecorator(mswDecorator);
 
 // https://storybook.js.org/docs/react/writing-stories/parameters#global-parameters
