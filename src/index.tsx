@@ -8,11 +8,14 @@ import {
   RefetchOptions,
 } from 'react-query';
 
-export interface AuthProviderConfig<User = unknown, Error = unknown> {
+export interface AuthProviderConfig<
+  Authenticatable = unknown,
+  Error = unknown
+> {
   key?: string;
-  loadUser: (data: any) => Promise<User>;
-  loginFn: (data: any) => Promise<User>;
-  registerFn: (data: any) => Promise<User>;
+  loadAuthenticatable: (data: any) => Promise<Authenticatable>;
+  loginFn: (data: any) => Promise<Authenticatable>;
+  registerFn: (data: any) => Promise<Authenticatable>;
   logoutFn: () => Promise<any>;
   waitInitial?: boolean;
   LoaderComponent?: () => JSX.Element;
@@ -20,21 +23,21 @@ export interface AuthProviderConfig<User = unknown, Error = unknown> {
 }
 
 export interface AuthContextValue<
-  User = unknown,
+  Authenticatable = unknown,
   Error = unknown,
   LoginCredentials = unknown,
   RegisterCredentials = unknown
 > {
-  user: User | undefined;
-  login: UseMutateAsyncFunction<User, any, LoginCredentials>;
+  authenticatable: Authenticatable | undefined;
+  login: UseMutateAsyncFunction<Authenticatable, any, LoginCredentials>;
   logout: UseMutateAsyncFunction<any, any, void, any>;
-  register: UseMutateAsyncFunction<User, any, RegisterCredentials>;
+  register: UseMutateAsyncFunction<Authenticatable, any, RegisterCredentials>;
   isLoggingIn: boolean;
   isLoggingOut: boolean;
   isRegistering: boolean;
-  refetchUser: (
+  refetchAuthenticatable: (
     options?: RefetchOptions | undefined
-  ) => Promise<QueryObserverResult<User, Error>>;
+  ) => Promise<QueryObserverResult<Authenticatable, Error>>;
   error: Error | null;
 }
 
@@ -43,13 +46,13 @@ export interface AuthProviderProps {
 }
 
 export function initReactQueryAuth<
-  User = unknown,
+  Authenticatable = unknown,
   Error = unknown,
   LoginCredentials = unknown,
   RegisterCredentials = unknown
->(config: AuthProviderConfig<User, Error>) {
+>(config: AuthProviderConfig<Authenticatable, Error>) {
   const AuthContext = React.createContext<AuthContextValue<
-    User,
+    Authenticatable,
     Error,
     LoginCredentials,
     RegisterCredentials
@@ -57,11 +60,11 @@ export function initReactQueryAuth<
   AuthContext.displayName = 'AuthContext';
 
   const {
-    loadUser,
+    loadAuthenticatable,
     loginFn,
     registerFn,
     logoutFn,
-    key = 'auth-user',
+    key = 'auth-authenticatable',
     waitInitial = true,
     LoaderComponent = () => <div>Loading...</div>,
     ErrorComponent = (error: any) => (
@@ -73,34 +76,34 @@ export function initReactQueryAuth<
     const queryClient = useQueryClient();
 
     const {
-      data: user,
+      data: authenticatable,
       error,
       status,
       isLoading,
       isIdle,
       isSuccess,
       refetch,
-    } = useQuery<User, Error>({
+    } = useQuery<Authenticatable, Error>({
       queryKey: key,
-      queryFn: loadUser,
+      queryFn: loadAuthenticatable,
     });
 
-    const setUser = React.useCallback(
-      (data: User) => queryClient.setQueryData(key, data),
+    const setAuthenticatable = React.useCallback(
+      (data: Authenticatable) => queryClient.setQueryData(key, data),
       [queryClient]
     );
 
     const loginMutation = useMutation({
       mutationFn: loginFn,
-      onSuccess: user => {
-        setUser(user);
+      onSuccess: authenticatable => {
+        setAuthenticatable(authenticatable);
       },
     });
 
     const registerMutation = useMutation({
       mutationFn: registerFn,
-      onSuccess: user => {
-        setUser(user);
+      onSuccess: authenticatable => {
+        setAuthenticatable(authenticatable);
       },
     });
 
@@ -113,9 +116,9 @@ export function initReactQueryAuth<
 
     const value = React.useMemo(
       () => ({
-        user,
+        authenticatable,
         error,
-        refetchUser: refetch,
+        refetchAuthenticatable: refetch,
         login: loginMutation.mutateAsync,
         isLoggingIn: loginMutation.isLoading,
         logout: logoutMutation.mutateAsync,
@@ -124,7 +127,7 @@ export function initReactQueryAuth<
         isRegistering: registerMutation.isLoading,
       }),
       [
-        user,
+        authenticatable,
         error,
         refetch,
         loginMutation.mutateAsync,

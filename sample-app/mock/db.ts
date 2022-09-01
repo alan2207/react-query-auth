@@ -1,21 +1,24 @@
-import { User } from '../api';
+import { Authenticatable } from '../api';
 
-const users: Record<string, User> = JSON.parse(
-  window.localStorage.getItem('db_users') || '{}'
+const authenticatables: Record<string, Authenticatable> = JSON.parse(
+  window.localStorage.getItem('db_authenticatables') || '{}'
 );
 
 const blackListEmails = ['hacker@mail.com', 'asd@mail.com'];
 
-export function setUser(data: User) {
+export function setAuthenticatable(data: Authenticatable) {
   if (data?.email && !blackListEmails.includes(data?.email)) {
-    users[data.email] = data;
-    window.localStorage.setItem('db_users', JSON.stringify(users));
+    authenticatables[data.email] = data;
+    window.localStorage.setItem(
+      'db_authenticatables',
+      JSON.stringify(authenticatables)
+    );
     return data;
   } else {
     return null;
   }
 }
 
-export function getUser(email: string) {
-  return users[email];
+export function getAuthenticatable(email: string) {
+  return authenticatables[email];
 }

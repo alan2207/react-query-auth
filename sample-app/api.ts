@@ -1,11 +1,11 @@
 import { storage } from './utils';
 
 interface AuthResponse {
-  user: User;
+  authenticatable: Authenticatable;
   jwt: string;
 }
 
-export interface User {
+export interface Authenticatable {
   id: string;
   email: string;
   name?: string;
@@ -21,7 +21,7 @@ export async function handleApiResponse(response) {
   }
 }
 
-export async function getUserProfile() {
+export async function getAuthenticatableProfile() {
   return await fetch('/auth/me', {
     headers: {
       Authorization: storage.getToken(),
