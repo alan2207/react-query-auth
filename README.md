@@ -108,7 +108,7 @@ import { useAuth } from 'src/lib/auth';
 
 export const UserInfo = () => {
   // PROTIP: You can use destructuring to name your authenticatable to something that better serves your app
-  const { user: authenticatable } = useAuth();
+  const { authenticatable: user } = useAuth();
   return <div>My Name is {user.name}</div>;
 };
 ```
@@ -210,7 +210,7 @@ import { useAuth } from 'src/lib/auth';
 
 export const UserInfo = () => {
   const {
-    user: authenticatable,
+    authenticatable: user,
     login,
     logout,
     register,
@@ -273,8 +273,10 @@ export const App = () => {
     <ReactQueryProvider>
       <AuthProvider>
         <AuthConsumer>
-          {({ user: authenticatable }) => (
-            <div>{JSON.stringify(user) || 'No Authenticatable Found'}</div>
+          {({ authenticatable }) => (
+            <div>
+              {JSON.stringify(authenticatable) || 'No Authenticatable Found'}
+            </div>
           )}
         </AuthConsumer>
       </AuthProvider>
