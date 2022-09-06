@@ -6,7 +6,7 @@ Authenticate your react applications easily with react-query.
 
 ## Introduction
 
-Thanks to react-query we have been able to reduce our codebases by a lot by caching server state with it. However, we still have to think about where to store the user data. The user data can be considered as a global application state because we need to access it from lots of places in the application. On the other hand, it is also a server state since all the user data is expected to arrive from a server. With this library, we can manage user authentication in an easy way. It is agnostic of the method you are using for authenticating your application, it can be adjusted according to the API it is being used against. It just needs the configuration to be provided and the rest will be set up automatically.
+Thanks to react-query we have been able to reduce our codebases by a lot by caching server state with it. However, we still have to think about where to store the authenticatables (typically a "user") data. The authenticatables data can be considered as a global application state because we need to access it from lots of places in the application. On the other hand, it is also a server state since all the authenticatable data is expected to arrive from a server. With this library, we can manage authentication in an easy way. It is agnostic of the method you are using for authenticating your application, it can be adjusted according to the API it is being used against. It just needs the configuration to be provided and the rest will be set up automatically.
 
 ## Table of Contents
 
@@ -52,9 +52,9 @@ First of all, `AuthProvider` and `useAuth` must be initialized and exported.
 // src/lib/auth.ts
 
 import { initReactQueryAuth } from 'react-query-auth';
-import { loginUser, loginFn, registerFn, logoutFn } from '...';
+import { loginAuthenticatable, loginFn, registerFn, logoutFn } from '...';
 
-interface User {
+interface Authenticatable {
   id: string;
   name: string;
 }
@@ -64,14 +64,14 @@ interface Error {
 }
 
 const authConfig = {
-  loadUser,
+  loadAuthenticatable,
   loginFn,
   registerFn,
   logoutFn,
 };
 
 export const { AuthProvider, useAuth } = initReactQueryAuth<
-  User,
+  Authenticatable,
   Error,
   LoginCredentials,
   RegisterCredentials
@@ -100,14 +100,15 @@ export const App = () => {
 };
 ```
 
-Then the user data is accessible from any component rendered inside the provider via the `useAuth` hook:
+Then the authenticatables data is accessible from any component rendered inside the provider via the `useAuth` hook:
 
 ```ts
 // src/components/UserInfo.tsx
 import { useAuth } from 'src/lib/auth';
 
 export const UserInfo = () => {
-  const { user } = useAuth();
+  // PROTIP: You can use destructuring to name your authenticatable to something that better serves your app
+  const { authenticatable: user } = useAuth();
   return <div>My Name is {user.name}</div>;
 };
 ```
@@ -120,9 +121,12 @@ Function that initializes and returns `AuthProvider`, `AuthConsumer` and `useAut
 
 ```ts
 // src/lib/auth.ts
-export const { AuthProvider, useAuth } = initReactQueryAuth<User, Error>({
+export const { AuthProvider, useAuth } = initReactQueryAuth<
+  Authenticatable,
+  Error
+>({
   key,
-  loadUser,
+  loadAuthenticatable,
   loginFn,
   registerFn,
   logoutFn,
@@ -137,36 +141,36 @@ export const { AuthProvider, useAuth } = initReactQueryAuth<User, Error>({
 - `key: string`
 
   - key that is being used by react-query.
-  - defaults to `'auth-user'`
+  - defaults to `'auth-authenticatable'`
 
-- `loadUser: (data:any) => Promise<User>`
-
-  - **Required**
-  - function that handles user profile fetching
-
-- `loginFn: (data:any) => Promise<User>`
+- `loadAuthenticatable: (data:any) => Promise<Authenticatable>`
 
   - **Required**
-  - function that handles user login
+  - function that handles authenticatable profile fetching
 
-- `registerFn: (data:any) => Promise<User>`
+- `loginFn: (data:any) => Promise<Authenticatable>`
 
   - **Required**
-  - function that handles user registration
+  - function that handles authenticatable login
+
+- `registerFn: (data:any) => Promise<Authenticatable>`
+
+  - **Required**
+  - function that handles authenticatable registration
 
 - `logoutFn: (data:unknown) => Promise<any>`
 
   - **Required**
-  - function that handles user logout
+  - function that handles authenticatable logout
 
 - `logoutFn: () => Promise<any>`
 
   - **Required**
-  - function that handles user logout
+  - function that handles authenticatable logout
 
 - `waitInitial: boolean`
 
-  - Flag for checking if the provider should show `LoaderComponent` while fetching the user. If set to `false` it will fetch the user in the background.
+  - Flag for checking if the provider should show `LoaderComponent` while fetching the authenticatable. If set to `false` it will fetch the authenticatable in the background.
   - defaults to `true`
 
 - `LoaderComponent: () => React.ReactNode`
@@ -199,35 +203,42 @@ export const App = () => {
 
 #### `useAuth`
 
-The hook allows access of the user data across the app.
+The hook allows access of the authenticatable data across the app.
 
 ```ts
 import { useAuth } from 'src/lib/auth';
 
 export const UserInfo = () => {
-  const { user, login, logout, register, error, refetch } = useAuth();
+  const {
+    authenticatable: user,
+    login,
+    logout,
+    register,
+    error,
+    refetch,
+  } = useAuth();
   return <div>My Name is {user.name}</div>;
 };
 ```
 
 ##### returns context value:
 
-- `user: User | undefined`
+- `authenticatable: Authenticatable | undefined`
 
-  - user data that was retrieved from server
+  - authenticatables data that was retrieved from server
   - type can be provided by passing it to `initReactQueryAuth` generic
 
 - `login: (variables: TVariables, { onSuccess, onSettled, onError }) => Promise<TData>`
 
-  - function to login the user
+  - function to login the authenticatable
 
 - `logout: (variables: TVariables, { onSuccess, onSettled, onError }) => Promise<TData>`
 
-  - function to logout the user
+  - function to logout the authenticatable
 
 - `register: (variables: TVariables, { onSuccess, onSettled, onError }) => Promise<TData>`
 
-  - function to register the user
+  - function to register the authenticatable
 
 - `isLoggingIn: boolean`
 
@@ -241,9 +252,9 @@ export const UserInfo = () => {
 
   - checks if is registering in is in progress
 
-- `refetchUser: (options?: RefetchOptions | undefined) => Promise<QueryObserverResult<User, Error>>`
+- `refetchAuthenticatable: (options?: RefetchOptions | undefined) => Promise<QueryObserverResult<Authenticatable, Error>>`
 
-  - function for refetching user data. this can also be done by invalidating its query by `key`
+  - function for refetching authenticatables data. this can also be done by invalidating its query by `key`
 
 - `error: Error | null`
   - error object
@@ -262,7 +273,11 @@ export const App = () => {
     <ReactQueryProvider>
       <AuthProvider>
         <AuthConsumer>
-          {({ user }) => <div>{JSON.stringify(user) || 'No User Found'}</div>}
+          {({ authenticatable }) => (
+            <div>
+              {JSON.stringify(authenticatable) || 'No Authenticatable Found'}
+            </div>
+          )}
         </AuthConsumer>
       </AuthProvider>
     </ReactQueryProvider>

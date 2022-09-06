@@ -14,7 +14,7 @@ export function Register() {
         onSubmit={async e => {
           e.preventDefault();
           try {
-            await register(values);
+            await register(values as RegisterCredentials);
           } catch (err) {
             setError(err);
           }

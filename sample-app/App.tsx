@@ -1,9 +1,9 @@
 import React from 'react';
 import { Auth } from './components/Auth';
-import { UserInfo } from './components/UserInfo';
+import { AuthenticatableInfo } from './components/AuthenticatableInfo';
 import { useAuth } from './lib/auth';
 
 export function App() {
-  const { user } = useAuth();
-  return user ? <UserInfo /> : <Auth />;
+  const { authenticatable } = useAuth();
+  return authenticatable ? <AuthenticatableInfo /> : <Auth />;
 }

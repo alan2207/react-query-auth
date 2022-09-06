@@ -13,7 +13,7 @@ export function Login() {
         onSubmit={async e => {
           e.preventDefault();
           try {
-            await login(values);
+            await login(values as LoginCredentials);
           } catch (err) {
             setError(err);
           }

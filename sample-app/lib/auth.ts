@@ -1,9 +1,9 @@
 import { initReactQueryAuth } from '../../src';
 import {
-  getUserProfile,
+  getAuthenticatableProfile,
   registerWithEmailAndPassword,
   loginWithEmailAndPassword,
-  User,
+  Authenticatable,
 } from '../api';
 import { storage } from '../utils';
 
@@ -18,32 +18,32 @@ export type RegisterCredentials = {
   password: string;
 };
 
-async function handleUserResponse(data) {
-  const { jwt, user } = data;
+async function handleAuthenticatableResponse(data) {
+  const { jwt, authenticatable } = data;
   storage.setToken(jwt);
-  return user;
+  return authenticatable;
 }
 
-async function loadUser() {
-  let user = null;
+async function loadAuthenticatable() {
+  let authenticatable = null;
 
   if (storage.getToken()) {
-    const data = await getUserProfile();
-    user = data;
+    const data = await getAuthenticatableProfile();
+    authenticatable = data;
   }
-  return user;
+  return authenticatable;
 }
 
 async function loginFn(data: LoginCredentials) {
   const response = await loginWithEmailAndPassword(data);
-  const user = await handleUserResponse(response);
-  return user;
+  const authenticatable = await handleAuthenticatableResponse(response);
+  return authenticatable;
 }
 
 async function registerFn(data: RegisterCredentials) {
   const response = await registerWithEmailAndPassword(data);
-  const user = await handleUserResponse(response);
-  return user;
+  const authenticatable = await handleAuthenticatableResponse(response);
+  return authenticatable;
 }
 
 async function logoutFn() {
@@ -51,14 +51,14 @@ async function logoutFn() {
 }
 
 const authConfig = {
-  loadUser,
+  loadAuthenticatable,
   loginFn,
   registerFn,
   logoutFn,
 };
 
 const { AuthProvider, AuthConsumer, useAuth } = initReactQueryAuth<
-  User,
+  Authenticatable,
   any,
   LoginCredentials,
   RegisterCredentials
