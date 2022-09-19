@@ -10,7 +10,7 @@ export function Login() {
     <div>
       Login
       <form
-        onSubmit={async e => {
+        onSubmit={async (e) => {
           e.preventDefault();
           try {
             await login(values);

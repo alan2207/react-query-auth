@@ -11,7 +11,7 @@ export function Register() {
     <div>
       Register
       <form
-        onSubmit={async e => {
+        onSubmit={async (e) => {
           e.preventDefault();
           try {
             await register(values);

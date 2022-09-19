@@ -24,7 +24,7 @@ export async function handleApiResponse(response) {
 export async function getUserProfile() {
   return await fetch('/auth/me', {
     headers: {
-      Authorization: storage.getToken(),
+      Authorization: storage.getToken() ?? '',
     },
   }).then(handleApiResponse);
 }

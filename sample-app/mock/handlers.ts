@@ -4,7 +4,7 @@ import { getUser, setUser } from './db';
 
 export const handlers = [
   rest.get('/auth/me', (req, res, ctx) => {
-    const user = getUser(req.headers.get('Authorization'));
+    const user = getUser(req.headers.get('Authorization') ?? '');
 
     if (user) {
       return res(ctx.delay(1000), ctx.json(user));

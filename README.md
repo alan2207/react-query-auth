@@ -30,7 +30,7 @@ $ npm run storybook
 
 ## Prerequisites
 
-It is required to have `react-query` library installed and configured.
+It is required to have `@tanstack/react-query` library installed and configured.
 
 ## Installation
 
@@ -70,12 +70,10 @@ const authConfig = {
   logoutFn,
 };
 
-export const { AuthProvider, useAuth } = initReactQueryAuth<
-  User,
-  Error,
-  LoginCredentials,
-  RegisterCredentials
->(authConfig);
+export const { AuthProvider, useAuth } =
+  initReactQueryAuth<User, Error, LoginCredentials, RegisterCredentials>(
+    authConfig
+  );
 ```
 
 `AuthProvider` should be rendered inside the `QueryClientProvider` from `react-query`.

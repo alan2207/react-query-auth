@@ -6,7 +6,7 @@ import {
   UseMutateAsyncFunction,
   QueryObserverResult,
   RefetchOptions,
-} from 'react-query';
+} from '@tanstack/react-query';
 
 export interface AuthProviderConfig<User = unknown, Error = unknown> {
   key?: string;
@@ -48,12 +48,13 @@ export function initReactQueryAuth<
   LoginCredentials = unknown,
   RegisterCredentials = unknown
 >(config: AuthProviderConfig<User, Error>) {
-  const AuthContext = React.createContext<AuthContextValue<
-    User,
-    Error,
-    LoginCredentials,
-    RegisterCredentials
-  > | null>(null);
+  const AuthContext =
+    React.createContext<AuthContextValue<
+      User,
+      Error,
+      LoginCredentials,
+      RegisterCredentials
+    > | null>(null);
   AuthContext.displayName = 'AuthContext';
 
   const {
@@ -77,29 +78,29 @@ export function initReactQueryAuth<
       error,
       status,
       isLoading,
-      isIdle,
+      fetchStatus,
       isSuccess,
       refetch,
     } = useQuery<User, Error>({
-      queryKey: key,
+      queryKey: [key],
       queryFn: loadUser,
     });
 
     const setUser = React.useCallback(
-      (data: User) => queryClient.setQueryData(key, data),
+      (data: User) => queryClient.setQueryData([key], data),
       [queryClient]
     );
 
     const loginMutation = useMutation({
       mutationFn: loginFn,
-      onSuccess: user => {
+      onSuccess: (user) => {
         setUser(user);
       },
     });
 
     const registerMutation = useMutation({
       mutationFn: registerFn,
-      onSuccess: user => {
+      onSuccess: (user) => {
         setUser(user);
       },
     });
@@ -142,7 +143,7 @@ export function initReactQueryAuth<
       );
     }
 
-    if (isLoading || isIdle) {
+    if (isLoading || fetchStatus === 'idle') {
       return <LoaderComponent />;
     }
 
