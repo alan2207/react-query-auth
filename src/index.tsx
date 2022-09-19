@@ -48,13 +48,12 @@ export function initReactQueryAuth<
   LoginCredentials = unknown,
   RegisterCredentials = unknown
 >(config: AuthProviderConfig<User, Error>) {
-  const AuthContext =
-    React.createContext<AuthContextValue<
-      User,
-      Error,
-      LoginCredentials,
-      RegisterCredentials
-    > | null>(null);
+  const AuthContext = React.createContext<AuthContextValue<
+    User,
+    Error,
+    LoginCredentials,
+    RegisterCredentials
+  > | null>(null);
   AuthContext.displayName = 'AuthContext';
 
   const {

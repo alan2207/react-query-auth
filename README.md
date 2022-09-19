@@ -70,10 +70,12 @@ const authConfig = {
   logoutFn,
 };
 
-export const { AuthProvider, useAuth } =
-  initReactQueryAuth<User, Error, LoginCredentials, RegisterCredentials>(
-    authConfig
-  );
+export const { AuthProvider, useAuth } = initReactQueryAuth<
+  User,
+  Error,
+  LoginCredentials,
+  RegisterCredentials
+>(authConfig);
 ```
 
 `AuthProvider` should be rendered inside the `QueryClientProvider` from `react-query`.
