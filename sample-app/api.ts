@@ -42,3 +42,7 @@ export function registerWithEmailAndPassword(data): Promise<AuthResponse> {
     body: JSON.stringify(data),
   }).then(handleApiResponse);
 }
+
+export function logout(): Promise<{ message: string }> {
+  return fetch('/auth/logout', { method: 'POST' }).then(handleApiResponse);
+}

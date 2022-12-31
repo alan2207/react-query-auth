@@ -4,152 +4,138 @@ import {
   useMutation,
   useQueryClient,
   QueryKey,
-  QueryFunction,
   UseQueryOptions,
-  UseQueryResult,
-  UseMutationResult,
+  QueryFunction,
+  MutationFunction,
+  UseMutationOptions,
 } from '@tanstack/react-query';
 
-export interface AuthProviderConfig<
+export interface ReactQueryAuthConfig<
   User,
-  Error,
   LoginCredentials,
   RegisterCredentials
 > {
-  key?: QueryKey;
-  loadUser: QueryFunction<User, QueryKey>;
-  userQueryOptions?: Omit<
-    UseQueryOptions<User, Error, User, QueryKey>,
-    'queryFn' | 'queryKey'
-  >;
-  loginFn: (data: LoginCredentials) => Promise<User>;
-  registerFn: (data: RegisterCredentials) => Promise<User>;
-  logoutFn: () => any;
-}
-
-export interface AuthContextValue<
-  User,
-  Error,
-  LoginCredentials,
-  RegisterCredentials
-> {
-  user: UseQueryResult<User, Error>;
-  login: UseMutationResult<User, any, LoginCredentials>;
-  logout: UseMutationResult<any, any, void, any>;
-  register: UseMutationResult<User, any, RegisterCredentials>;
+  userFn: QueryFunction<User, QueryKey>;
+  loginFn: MutationFunction<User, LoginCredentials>;
+  registerFn: MutationFunction<User, RegisterCredentials>;
+  logoutFn: MutationFunction<unknown, unknown>;
+  userKey?: QueryKey;
 }
 
 export interface AuthProviderProps {
   children: React.ReactNode;
 }
 
-export function initReactQueryAuth<
+export function configureAuth<
   User,
   Error,
   LoginCredentials,
   RegisterCredentials
->(
-  config: AuthProviderConfig<User, Error, LoginCredentials, RegisterCredentials>
-) {
-  const AuthContext =
-    React.createContext<AuthContextValue<
-      User,
-      Error,
-      LoginCredentials,
-      RegisterCredentials
-    > | null>(null);
-  AuthContext.displayName = 'AuthContext';
-
+>(config: ReactQueryAuthConfig<User, LoginCredentials, RegisterCredentials>) {
   const {
-    loadUser,
-    userQueryOptions,
+    userFn,
+    userKey = ['authenticated-user'],
     loginFn,
     registerFn,
     logoutFn,
-    key = ['auth-user'],
   } = config;
 
-  function AuthProvider({ children }: AuthProviderProps): JSX.Element {
+  const useUser = (
+    options?: Omit<
+      UseQueryOptions<User, Error, User, QueryKey>,
+      'queryKey' | 'queryFn'
+    >
+  ) => useQuery(userKey, userFn, options);
+
+  const useLogin = (
+    options?: Omit<
+      UseMutationOptions<User, Error, LoginCredentials>,
+      'mutationFn'
+    >
+  ) => {
     const queryClient = useQueryClient();
 
-    const user = useQuery<User, Error>(key, loadUser, userQueryOptions);
-
     const setUser = React.useCallback(
-      (data: User) => queryClient.setQueryData(key, data),
+      (data: User) => queryClient.setQueryData(userKey, data),
       [queryClient]
     );
 
-    const login = useMutation({
+    return useMutation({
       mutationFn: loginFn,
-      onSuccess: (user) => {
+      ...options,
+      onSuccess: (user, ...rest) => {
         setUser(user);
+        options?.onSuccess?.(user, ...rest);
       },
     });
+  };
 
-    const register = useMutation({
+  const useRegister = (
+    options?: Omit<
+      UseMutationOptions<User, Error, RegisterCredentials>,
+      'mutationFn'
+    >
+  ) => {
+    const queryClient = useQueryClient();
+
+    const setUser = React.useCallback(
+      (data: User) => queryClient.setQueryData(userKey, data),
+      [queryClient]
+    );
+
+    return useMutation({
       mutationFn: registerFn,
-      onSuccess: (user) => {
+      ...options,
+      onSuccess: (user, ...rest) => {
         setUser(user);
+        options?.onSuccess?.(user, ...rest);
       },
     });
+  };
 
-    const logout = useMutation({
+  const useLogout = (options?: UseMutationOptions<unknown, Error, unknown>) => {
+    const queryClient = useQueryClient();
+
+    const setUser = React.useCallback(
+      (data: User | null) => queryClient.setQueryData(userKey, data),
+      [queryClient]
+    );
+
+    return useMutation({
       mutationFn: logoutFn,
-      onSuccess: () => {
-        queryClient.clear();
+      ...options,
+      onSuccess: (...args) => {
+        setUser(null);
+        options?.onSuccess?.(...args);
       },
     });
-
-    const value = React.useMemo(
-      () => ({
-        user,
-        login,
-        logout,
-        register,
-      }),
-      [user, login, logout, register]
-    );
-
-    return (
-      <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-    );
-  }
-
-  function useAuth() {
-    const context = React.useContext(AuthContext);
-    if (!context) {
-      throw new Error(`useAuth must be used within an AuthProvider`);
-    }
-    return context;
-  }
+  };
 
   function AuthLoader({
     children,
     renderLoading,
     renderError,
-    renderFallback,
+    renderUnauthenticated,
   }: {
-    renderLoading: () => JSX.Element;
-    renderError: ({ error }: { error: Error }) => JSX.Element;
-    renderFallback: () => JSX.Element;
     children: React.ReactNode;
+    renderLoading: () => JSX.Element;
+    renderError?: ({ error }: { error: Error }) => JSX.Element;
+    renderUnauthenticated?: () => JSX.Element;
   }) {
-    const {
-      user: { isSuccess, isLoading, fetchStatus, error, status, data },
-    } = useAuth();
+    const { isSuccess, isFetched, error, status, data } = useUser();
 
-    if (error) {
+    if (renderError && error) {
       return renderError({ error });
     }
 
     if (isSuccess) {
-      if (!data) {
-        return renderFallback();
+      if (renderUnauthenticated && !data) {
+        return renderUnauthenticated();
       }
       return <>{children}</>;
     }
 
-    if (isLoading || fetchStatus === 'idle') {
+    if (!isFetched) {
       return renderLoading();
     }
 
@@ -157,9 +143,10 @@ export function initReactQueryAuth<
   }
 
   return {
-    AuthProvider,
-    AuthConsumer: AuthContext.Consumer,
+    useUser,
+    useLogin,
+    useRegister,
+    useLogout,
     AuthLoader,
-    useAuth,
   };
 }

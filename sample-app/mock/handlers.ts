@@ -1,5 +1,6 @@
 import { rest } from 'msw';
 import { User } from '../api';
+import { storage } from '../utils';
 import { getUser, setUser } from './db';
 
 export const handlers = [
@@ -53,5 +54,9 @@ export const handlers = [
         ctx.json({ message: 'The user already exists!' })
       );
     }
+  }),
+  rest.post('/auth/logout', (req, res, ctx) => {
+    storage.clearToken();
+    return res(ctx.delay(1000), ctx.json({ message: 'Logged out' }));
   }),
 ];

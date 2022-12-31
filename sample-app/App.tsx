@@ -1,46 +1,36 @@
 import * as React from 'react';
-import { Auth } from './components/Auth';
-import { UserInfo } from './components/UserInfo';
-import { AuthLoader, AuthProvider } from './lib/auth';
-import { ReactQueryProvider } from './lib/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { AuthScreen } from './components/auth-screen';
+import { UserInfo } from './components/user-info';
+import { AuthLoader } from './lib/auth';
+import { Container } from './components/ui';
 
-export default function SampleApp() {
+const SampleApp = () => {
+  const [queryClient] = React.useState(() => new QueryClient());
+
   return (
-    <div style={containerStyles}>
-      <ReactQueryProvider>
-        <AuthProvider>
-          <AuthLoader
-            renderLoading={() => <div>Loading ...</div>}
-            renderError={({ error }) => (
-              <div
-                style={{
-                  color: 'tomato',
-                }}
-              >
-                {JSON.stringify(error, null, 2)}
-              </div>
-            )}
-            renderFallback={() => <Auth />}
-          >
-            <UserInfo />
-          </AuthLoader>
-        </AuthProvider>
-      </ReactQueryProvider>
-    </div>
+    <Container>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools />
+        <AuthLoader
+          renderLoading={() => <div>Loading ...</div>}
+          renderError={({ error }) => (
+            <div
+              style={{
+                color: 'tomato',
+              }}
+            >
+              {JSON.stringify(error, null, 2)}
+            </div>
+          )}
+          renderUnauthenticated={() => <AuthScreen />}
+        >
+          <UserInfo />
+        </AuthLoader>
+      </QueryClientProvider>
+    </Container>
   );
-}
-
-const containerStyles: React.CSSProperties = {
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'strech',
-  fontFamily: 'sans-serif',
-  border: '1px solid black',
-  width: '100%',
-  maxWidth: '480px',
-  margin: '0 auto',
-  padding: '32px',
-  gap: '16px',
 };
+
+export default SampleApp;

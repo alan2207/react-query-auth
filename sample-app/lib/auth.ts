@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { initReactQueryAuth } from '../../src';
+import { configureAuth } from '../../src';
 import {
   getUserProfile,
   registerWithEmailAndPassword,
   loginWithEmailAndPassword,
   AuthResponse,
+  logout,
 } from '../api';
 import { storage } from '../utils';
 
@@ -25,7 +25,7 @@ async function handleUserResponse(data: AuthResponse) {
   return user;
 }
 
-async function loadUser() {
+async function userFn() {
   const { user } = await getUserProfile();
   return user ?? null;
 }
@@ -42,22 +42,14 @@ async function registerFn(data: RegisterCredentials) {
   return user;
 }
 
-function logoutFn() {
-  storage.clearToken();
+async function logoutFn() {
+  await logout();
 }
 
-export const {
-  AuthProvider,
-  AuthConsumer,
-  AuthLoader,
-  useAuth,
-} = initReactQueryAuth({
-  loadUser,
-  loginFn,
-  registerFn,
-  logoutFn,
-  userQueryOptions: {
-    refetchOnWindowFocus: false,
-    retry: 0,
-  },
-});
+export const { useUser, useLogin, useRegister, useLogout, AuthLoader } =
+  configureAuth({
+    userFn,
+    loginFn,
+    registerFn,
+    logoutFn,
+  });
