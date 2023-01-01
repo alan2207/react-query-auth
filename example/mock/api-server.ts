@@ -1,25 +1,17 @@
-import { rest } from 'msw';
-import { User } from '../api';
-import { getUser, setUser } from './db';
+import { setupWorker, rest } from 'msw';
+import { storage } from '../lib/utils';
+import { DBUser, getUser, setUser } from './db';
 
-export const handlers = [
+const handlers = [
   rest.get('/auth/me', (req, res, ctx) => {
     const user = getUser(req.headers.get('Authorization'));
 
-    if (user) {
-      return res(ctx.delay(1000), ctx.json(user));
-    }
-
-    return res(
-      ctx.delay(1000),
-      ctx.status(401),
-      ctx.json({ message: 'Unauthorized' })
-    );
+    return res(ctx.delay(1000), ctx.json({ user }));
   }),
-  rest.post('/auth/login', (req, res, ctx) => {
-    const parsedBody = JSON.parse(req.body as string) as User;
+  rest.post('/auth/login', async (req, res, ctx) => {
+    const parsedBody = (await req.json()) as DBUser;
     const user = getUser(parsedBody.email);
-    if (user) {
+    if (user && user.password === parsedBody.password) {
       return res(
         ctx.delay(1000),
         ctx.json({
@@ -35,8 +27,8 @@ export const handlers = [
       );
     }
   }),
-  rest.post('/auth/register', (req, res, ctx) => {
-    const parsedBody = JSON.parse(req.body as string) as User;
+  rest.post('/auth/register', async (req, res, ctx) => {
+    const parsedBody = (await req.json()) as DBUser;
     const user = getUser(parsedBody?.email);
     if (!user && parsedBody) {
       const newUser = setUser(parsedBody);
@@ -52,7 +44,7 @@ export const handlers = [
       return res(
         ctx.delay(1000),
         ctx.status(403),
-        ctx.json({ message: 'Forbidden User' })
+        ctx.json({ message: 'Registration failed!' })
       );
     } else {
       return res(
@@ -62,4 +54,10 @@ export const handlers = [
       );
     }
   }),
+  rest.post('/auth/logout', (req, res, ctx) => {
+    storage.clearToken();
+    return res(ctx.delay(1000), ctx.json({ message: 'Logged out' }));
+  }),
 ];
+
+export const worker = setupWorker(...handlers);

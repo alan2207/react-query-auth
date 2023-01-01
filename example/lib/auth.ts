@@ -1,11 +1,12 @@
-import { initReactQueryAuth } from '../../src';
+import { configureAuth } from '../..';
 import {
   getUserProfile,
   registerWithEmailAndPassword,
   loginWithEmailAndPassword,
-  User,
-} from '../api';
-import { storage } from '../utils';
+  AuthResponse,
+  logout,
+} from './api';
+import { storage } from './utils';
 
 export type LoginCredentials = {
   email: string;
@@ -18,20 +19,15 @@ export type RegisterCredentials = {
   password: string;
 };
 
-async function handleUserResponse(data) {
+async function handleUserResponse(data: AuthResponse) {
   const { jwt, user } = data;
   storage.setToken(jwt);
   return user;
 }
 
-async function loadUser() {
-  let user = null;
-
-  if (storage.getToken()) {
-    const data = await getUserProfile();
-    user = data;
-  }
-  return user;
+async function userFn() {
+  const { user } = await getUserProfile();
+  return user ?? null;
 }
 
 async function loginFn(data: LoginCredentials) {
@@ -47,21 +43,13 @@ async function registerFn(data: RegisterCredentials) {
 }
 
 async function logoutFn() {
-  await storage.clearToken();
+  await logout();
 }
 
-const authConfig = {
-  loadUser,
-  loginFn,
-  registerFn,
-  logoutFn,
-};
-
-const { AuthProvider, AuthConsumer, useAuth } = initReactQueryAuth<
-  User,
-  any,
-  LoginCredentials,
-  RegisterCredentials
->(authConfig);
-
-export { AuthProvider, AuthConsumer, useAuth };
+export const { useUser, useLogin, useRegister, useLogout, AuthLoader } =
+  configureAuth({
+    userFn,
+    loginFn,
+    registerFn,
+    logoutFn,
+  });

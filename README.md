@@ -2,273 +2,157 @@
 
 [![NPM](https://img.shields.io/npm/v/react-query-auth.svg)](https://www.npmjs.com/package/react-query-auth)
 
-Authenticate your react applications easily with react-query.
+Authenticate your react applications easily with [React Query](https://tanstack.com/query/v4/docs/react).
 
 ## Introduction
 
-Thanks to react-query we have been able to reduce our codebases by a lot by caching server state with it. However, we still have to think about where to store the user data. The user data can be considered as a global application state because we need to access it from lots of places in the application. On the other hand, it is also a server state since all the user data is expected to arrive from a server. With this library, we can manage user authentication in an easy way. It is agnostic of the method you are using for authenticating your application, it can be adjusted according to the API it is being used against. It just needs the configuration to be provided and the rest will be set up automatically.
-
-## Table of Contents
-
-- [Demo:](#demo)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Usage](#usage)
-- [API](#api)
-- [Contributing](#contributing)
-- [LICENSE](#license)
-
-## Demo:
-
-[CodeSandbox](https://codesandbox.io/s/react-query-auth-demo-fvvvt)
-
-It is also possible to try out the sample app locally via storybook by running following command:
-
-```
-$ npm run storybook
-```
-
-## Prerequisites
-
-It is required to have `react-query` library installed and configured.
+Using React Query has allowed us to significantly reduce the size of our codebase by caching server state. However, we still need to consider where to store user data, which is a type of global application state that we need to access from many parts of the app, but is also a server state since it is obtained from a server. This library makes it easy to manage user authentication, and can be adapted to work with any API or authentication method.
 
 ## Installation
 
 ```
-$ npm install react-query-auth
+$ npm install @tanstack/react-query react-query-auth
 ```
 
 Or if you use Yarn:
 
 ```
-$ yarn add react-query-auth
+$ yarn add @tanstack/react-query react-query-auth
 ```
 
 ## Usage
 
-First of all, `AuthProvider` and `useAuth` must be initialized and exported.
+To use this library, you will need to provide it with functions for fetching the current user, logging in, registering, and logging out. You can do this using the `configureAuth` function:
 
 ```ts
-// src/lib/auth.ts
+import { configureAuth } from 'react-query-auth';
 
-import { initReactQueryAuth } from 'react-query-auth';
-import { loginUser, loginFn, registerFn, logoutFn } from '...';
-
-interface User {
-  id: string;
-  name: string;
-}
-
-interface Error {
-  message: string;
-}
-
-const authConfig = {
-  loadUser,
-  loginFn,
-  registerFn,
-  logoutFn,
-};
-
-export const { AuthProvider, useAuth } = initReactQueryAuth<
-  User,
-  Error,
-  LoginCredentials,
-  RegisterCredentials
->(authConfig);
-```
-
-`AuthProvider` should be rendered inside the `QueryClientProvider` from `react-query`.
-
-```ts
-// src/App.tsx
-
-import { QueryClient } from 'react-query';
-import { QueryClientProvider } from 'react-query/devtools';
-import { AuthProvider } from 'src/lib/auth';
-
-const queryClient = new QueryClient();
-
-export const App = () => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        {//the rest the app goes here}
-      </AuthProvider>
-    </QueryClientProvider>
-  );
-};
-```
-
-Then the user data is accessible from any component rendered inside the provider via the `useAuth` hook:
-
-```ts
-// src/components/UserInfo.tsx
-import { useAuth } from 'src/lib/auth';
-
-export const UserInfo = () => {
-  const { user } = useAuth();
-  return <div>My Name is {user.name}</div>;
-};
-```
-
-## API
-
-### `initReactQueryAuth`
-
-Function that initializes and returns `AuthProvider`, `AuthConsumer` and `useAuth`.
-
-```ts
-// src/lib/auth.ts
-export const { AuthProvider, useAuth } = initReactQueryAuth<User, Error>({
-  key,
-  loadUser,
-  loginFn,
-  registerFn,
-  logoutFn,
-  waitInitial,
-  LoaderComponent,
-  ErrorComponent,
+const { useUser, useLogin, useRegister, useLogout } = configureAuth({
+  userFn: () => api.get('/me'),
+  loginFn: (credentials) => api.post('/login', credentials),
+  registerFn: (credentials) => api.post('/register', credentials),
+  logoutFn: () => api.post('/logout'),
 });
 ```
 
-##### configuration
+With these hooks, you can then add authentication functionality to your app. For example, you could use the `useUser` hook to access the authenticated user in a component.
 
-- `key: string`
+You can also use the `useLogin`, `useRegister`, and `useLogout` hooks to allow users to authenticate and log out.
 
-  - key that is being used by react-query.
-  - defaults to `'auth-user'`
+```tsx
+function UserInfo() {
+  const user = useUser();
+  const logout = useLogout();
 
-- `loadUser: (data:any) => Promise<User>`
+  if (user.isLoading) {
+    return <div>Loading ...</div>;
+  }
 
-  - **Required**
-  - function that handles user profile fetching
+  if (user.error) {
+    return <div>{JSON.stringify(user.error, null, 2)}</div>;
+  }
 
-- `loginFn: (data:any) => Promise<User>`
+  if (!user.data) {
+    return <div>Not logged in</div>;
+  }
 
-  - **Required**
-  - function that handles user login
-
-- `registerFn: (data:any) => Promise<User>`
-
-  - **Required**
-  - function that handles user registration
-
-- `logoutFn: (data:unknown) => Promise<any>`
-
-  - **Required**
-  - function that handles user logout
-
-- `logoutFn: () => Promise<any>`
-
-  - **Required**
-  - function that handles user logout
-
-- `waitInitial: boolean`
-
-  - Flag for checking if the provider should show `LoaderComponent` while fetching the user. If set to `false` it will fetch the user in the background.
-  - defaults to `true`
-
-- `LoaderComponent: () => React.ReactNode`
-
-  - component for the loader
-  - defaults to `() => <div>Loading...</div>`
-
-- `ErrorComponent: (error: Error) => React.ReactNode`
-
-  - component for the error
-  - defaults to `(error) => (<div style={{color: 'tomato'}}>{JSON.stringify(error, null, 2)}</div>)`
-
-#### `AuthProvider`
-
-The provider wraps the app and allows `useAuth` hook data to be available across the app. No further configuration required.
-
-```ts
-import { AuthProvider } from 'src/lib/auth';
-
-export const App = () => {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        {//the rest of the app}
-      </AuthProvider>
-    </QueryClientProvider>
+    <div>
+      <div>Logged in as {user.data.email}</div>
+      <button disabled={logout.isLoading} onClick={logout.mutate({})}>
+        Log out
+      </button>
+    </div>
   );
-};
+}
 ```
 
-#### `useAuth`
+The library also provides the `AuthLoader` component that can be used to handle loading states when fetching the authenticated user. You can use it like this:
 
-The hook allows access of the user data across the app.
-
-```ts
-import { useAuth } from 'src/lib/auth';
-
-export const UserInfo = () => {
-  const { user, login, logout, register, error, refetch } = useAuth();
-  return <div>My Name is {user.name}</div>;
-};
-```
-
-##### returns context value:
-
-- `user: User | undefined`
-
-  - user data that was retrieved from server
-  - type can be provided by passing it to `initReactQueryAuth` generic
-
-- `login: (variables: TVariables, { onSuccess, onSettled, onError }) => Promise<TData>`
-
-  - function to login the user
-
-- `logout: (variables: TVariables, { onSuccess, onSettled, onError }) => Promise<TData>`
-
-  - function to logout the user
-
-- `register: (variables: TVariables, { onSuccess, onSettled, onError }) => Promise<TData>`
-
-  - function to register the user
-
-- `isLoggingIn: boolean`
-
-  - checks if is logging in is in progress
-
-- `isLoggingOut: boolean`
-
-  - checks if is logging out is in progress
-
-- `isRegistering: boolean`
-
-  - checks if is registering in is in progress
-
-- `refetchUser: (options?: RefetchOptions | undefined) => Promise<QueryObserverResult<User, Error>>`
-
-  - function for refetching user data. this can also be done by invalidating its query by `key`
-
-- `error: Error | null`
-  - error object
-  - type can be provided by passing it to `initReactQueryAuth`
-
-### `AuthConsumer`
-
-Exposes the same context value like the `useAuth` hook but as render prop.
-
-```ts
-import { AuthProvider, AuthConsumer } from './lib/auth';
-import { ReactQueryProvider } from './lib/react-query';
-
-export const App = () => {
+```tsx
+function MyApp() {
   return (
-    <ReactQueryProvider>
-      <AuthProvider>
-        <AuthConsumer>
-          {({ user }) => <div>{JSON.stringify(user) || 'No User Found'}</div>}
-        </AuthConsumer>
-      </AuthProvider>
-    </ReactQueryProvider>
+    <AuthLoader
+      renderLoading={() => <div>Loading ...</div>}
+      renderUnauthenticated={() => <AuthScreen />}
+    >
+      <UserInfo />
+    </AuthLoader>
   );
-};
+}
 ```
+
+**NOTE: All hooks and components must be used within `QueryClientProvider`.**
+
+## API Reference:
+
+### `configureAuth`:
+
+The `configureAuth` function takes in a configuration object and returns a set of custom hooks for handling authentication.
+
+#### The `configureAuth` configuration object:
+
+A configuration object that specifies the functions and keys to be used for various authentication actions. It accepts the following properties:
+
+- **`userFn`:**
+  A function that is used to retrieve the authenticated user. It should return a Promise that resolves to the user object, or null if the user is not authenticated.
+
+- **`loginFn`:**
+  A function that is used to log the user in. It should accept login credentials as its argument and return a Promise that resolves to the user object.
+
+- **`registerFn`:**
+  A function that is used to register a new user. It should accept registration credentials as its argument and return a Promise that resolves to the new user object.
+
+- **`logoutFn`:**
+  A function that is used to log the user out. It should return a Promise that resolves when the logout action is complete.
+
+- **`userKey`:**
+  An optional key that is used to store the authenticated user in the react-query cache. The default value is `['authenticated-user']`.
+
+#### The `configureAuth` returned object:
+
+`configureAuth` returns an object with the following properties:
+
+- **`useUser`:**
+  A custom hook that retrieves the authenticated user. It is a wrapper around [useQuery](https://tanstack.com/query/v4/docs/react/reference/useQuery) that uses the `userFn` and `userKey` specified in the `configAuth` configuration. The hook accepts the same options as [useQuery](https://tanstack.com/query/v4/docs/react/reference/useQuery), except for `queryKey` and `queryFn`, which are predefined by the configuration.
+
+- **`useLogin`:**
+  A custom hook that logs the user in. It is a wrapper around [useMutation](https://tanstack.com/query/v4/docs/react/reference/useMutation) that uses the `loginFn` specified in the configuration. The hook accepts the same options as [useMutation](https://tanstack.com/query/v4/docs/react/reference/useMutation), except for `mutationFn`, which is set by the configuration. On success, the hook updates the authenticated user in the React Query cache using the `userKey` specified in the configuration.
+
+- **`useRegister`:**
+  A custom hook that registers a new user. It is a wrapper around [useMutation](https://tanstack.com/query/v4/docs/react/reference/useMutation) that uses the `registerFn` specified in the configuration. The hook accepts the same options as [useMutation](https://tanstack.com/query/v4/docs/react/reference/useMutation), except for `mutationFn`, which is set by the configuration. On success, the hook updates the authenticated user in the React Query cache using the `userKey` specified in the configuration.
+
+- **`useLogout`:**
+  A custom hook that logs the user out. It is a wrapper around [useMutation](https://tanstack.com/query/v4/docs/react/reference/useMutation) that uses the `logoutFn` specified in the configuration. The hook accepts the same options as [useMutation](https://tanstack.com/query/v4/docs/react/reference/useMutation), except for `mutationFn`, which is set by the configuration. On success, the hook removes the authenticated user from the React Query cache using the `userKey` specified in the configuration.
+
+- **`AuthLoader`:**
+
+  A component that can be used to handle loading states when fetching the authenticated user. It accepts the following props:
+
+  - **`renderLoading`**:
+    A function that is called when the authenticated user is being fetched. It should return a React node that is rendered while the user is being fetched.
+
+  - **`renderUnauthenticated`**:
+    A function that is called when the authenticated user is not authenticated. It should return a React node that is rendered when the user is not authenticated.
+
+  - **`children`**:
+    A React node that is rendered when the authenticated user is successfully fetched.
+
+## Demo:
+
+To try out the demo app, navigate to the `example` folder and install the dependencies by running:
+
+```bash
+cd example && npm install
+```
+
+Then you can start the demo app by running:
+
+```bash
+npm run start
+```
+
+Then open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ## Contributing
 
