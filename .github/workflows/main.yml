@@ -21,8 +21,6 @@ jobs:
 
       - name: Install deps and build (with cache)
         uses: bahmutov/npm-install@v1
-        with:
-          working-directory: examples/yarn
 
       - name: Lint
         run: yarn lint
