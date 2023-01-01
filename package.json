@@ -1,6 +1,6 @@
 {
   "name": "react-query-auth",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "author": "alan2207",
   "license": "MIT",
   "main": "dist/index.js",
