@@ -1,0 +1,33 @@
+{
+  "name": "example",
+  "private": true,
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "cross-env NODE_ENV=production vite --port=3000",
+    "build": "cross-env NODE_ENV=production vite build"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^4.20.4",
+    "@tanstack/react-query-devtools": "^4.20.4",
+    "msw": "^0.49.2",
+    "react-app-polyfill": "^3.0.0"
+  },
+  "alias": {
+    "react": "../node_modules/react",
+    "react-dom": "../node_modules/react-dom/profiling",
+    "scheduler/tracing": "../node_modules/scheduler/tracing-profiling"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.47",
+    "@types/react-dom": "^17.0.17",
+    "cross-env": "^7.0.3",
+    "typescript": "^4",
+    "vite": "latest",
+    "vite-preset-react": "latest"
+  },
+  "msw": {
+    "workerDirectory": "public"
+  }
+}

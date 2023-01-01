@@ -2,7 +2,7 @@
 
 [![NPM](https://img.shields.io/npm/v/react-query-auth.svg)](https://www.npmjs.com/package/react-query-auth)
 
-Authenticate your react applications easily with [React Query](https://tanstack.com/query/v4).
+Authenticate your react applications easily with [React Query](https://tanstack.com/query/v4/docs/react).
 
 ## Introduction
 
@@ -67,14 +67,13 @@ function UserInfo() {
 }
 ```
 
-The library also provides the `AuthLoader` component that can be used to handle loading and error states when fetching the authenticated user. You can use it like this:
+The library also provides the `AuthLoader` component that can be used to handle loading states when fetching the authenticated user. You can use it like this:
 
 ```tsx
 function MyApp() {
   return (
     <AuthLoader
       renderLoading={() => <div>Loading ...</div>}
-      renderError={({ error }) => <div>{JSON.stringify(error, null, 2)}</div>}
       renderUnauthenticated={() => <AuthScreen />}
     >
       <UserInfo />
@@ -128,13 +127,10 @@ A configuration object that specifies the functions and keys to be used for vari
 
 - **`AuthLoader`:**
 
-  A component that can be used to handle loading and error states when fetching the authenticated user. It accepts the following props:
+  A component that can be used to handle loading states when fetching the authenticated user. It accepts the following props:
 
   - **`renderLoading`**:
     A function that is called when the authenticated user is being fetched. It should return a React node that is rendered while the user is being fetched.
-
-  - **`renderError`**:
-    A function that is called when an error occurs while fetching the authenticated user. It should return a React node that is rendered when an error occurs.
 
   - **`renderUnauthenticated`**:
     A function that is called when the authenticated user is not authenticated. It should return a React node that is rendered when the user is not authenticated.
@@ -144,21 +140,19 @@ A configuration object that specifies the functions and keys to be used for vari
 
 ## Demo:
 
-To try out the demo app, install the dependencies by running:
+To try out the demo app, navigate to the `example` folder and install the dependencies by running:
 
 ```bash
-npm install
+cd example && npm install
 ```
 
 Then you can start the demo app by running:
 
 ```bash
-npm run storybook
+npm run start
 ```
 
-Then open [http://localhost:6006](http://localhost:6006) to view it in the browser.
-
-The code of the demo can be found in the `sample-app` folder.
+Then open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 ## Contributing
 

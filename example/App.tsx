@@ -15,15 +15,6 @@ const SampleApp = () => {
         <ReactQueryDevtools />
         <AuthLoader
           renderLoading={() => <div>Loading ...</div>}
-          renderError={({ error }) => (
-            <div
-              style={{
-                color: 'tomato',
-              }}
-            >
-              {JSON.stringify(error, null, 2)}
-            </div>
-          )}
           renderUnauthenticated={() => <AuthScreen />}
         >
           <UserInfo />

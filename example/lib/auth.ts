@@ -1,12 +1,12 @@
-import { configureAuth } from '../../src';
+import { configureAuth } from '../..';
 import {
   getUserProfile,
   registerWithEmailAndPassword,
   loginWithEmailAndPassword,
   AuthResponse,
   logout,
-} from '../api';
-import { storage } from '../utils';
+} from './api';
+import { storage } from './utils';
 
 export type LoginCredentials = {
   email: string;

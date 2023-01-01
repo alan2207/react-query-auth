@@ -114,19 +114,13 @@ export function configureAuth<
   function AuthLoader({
     children,
     renderLoading,
-    renderError,
     renderUnauthenticated,
   }: {
     children: React.ReactNode;
     renderLoading: () => JSX.Element;
-    renderError?: ({ error }: { error: Error }) => JSX.Element;
     renderUnauthenticated?: () => JSX.Element;
   }) {
-    const { isSuccess, isFetched, error, status, data } = useUser();
-
-    if (renderError && error) {
-      return renderError({ error });
-    }
+    const { isSuccess, isFetched, status, data } = useUser();
 
     if (isSuccess) {
       if (renderUnauthenticated && !data) {

@@ -70,21 +70,29 @@ export const Container = ({ children }: { children: React.ReactNode }) => {
   return (
     <div
       style={{
-        height: '100%',
+        height: '100vh',
         display: 'flex',
-        flexDirection: 'column',
         justifyContent: 'center',
-        alignItems: 'strech',
-        fontFamily: 'sans-serif',
-        border: '1px solid black',
-        width: '100%',
-        maxWidth: '480px',
-        margin: '0 auto',
-        padding: '32px',
-        gap: '16px',
+        alignItems: 'center',
       }}
     >
-      {children}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'strech',
+          fontFamily: 'sans-serif',
+          border: '1px solid black',
+          width: '100%',
+          maxWidth: '480px',
+          margin: '0 auto',
+          padding: '32px',
+          gap: '16px',
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 };

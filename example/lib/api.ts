@@ -17,6 +17,7 @@ export async function handleApiResponse(response: Response) {
   if (response.ok) {
     return data;
   } else {
+    console.error(JSON.stringify(data, null, 2));
     return Promise.reject(data);
   }
 }
@@ -29,14 +30,18 @@ export function getUserProfile(): Promise<{ user: User | undefined }> {
   }).then(handleApiResponse);
 }
 
-export function loginWithEmailAndPassword(data): Promise<AuthResponse> {
+export function loginWithEmailAndPassword(
+  data: unknown
+): Promise<AuthResponse> {
   return fetch('/auth/login', {
     method: 'POST',
     body: JSON.stringify(data),
   }).then(handleApiResponse);
 }
 
-export function registerWithEmailAndPassword(data): Promise<AuthResponse> {
+export function registerWithEmailAndPassword(
+  data: unknown
+): Promise<AuthResponse> {
   return fetch('/auth/register', {
     method: 'POST',
     body: JSON.stringify(data),

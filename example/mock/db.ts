@@ -1,10 +1,14 @@
-import { User } from '../api';
+export type DBUser = {
+  email: string;
+  name: string;
+  password: string;
+};
 
-const users: Record<string, User> = JSON.parse(
+const users: Record<string, DBUser> = JSON.parse(
   window.localStorage.getItem('db_users') || '{}'
 );
 
-export function setUser(data: User) {
+export function setUser(data: DBUser) {
   if (data?.email) {
     users[data.email] = data;
     window.localStorage.setItem('db_users', JSON.stringify(users));
