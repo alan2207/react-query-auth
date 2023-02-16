@@ -433,27 +433,32 @@
   dependencies:
     remove-accents "0.4.2"
 
-"@tanstack/query-core@4.20.4":
-  version "4.20.4"
-  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-4.20.4.tgz#1f7975a2db26a8bc2f382bad8a44cd422c846b17"
-  integrity sha512-lhLtGVNJDsJ/DyZXrLzekDEywQqRVykgBqTmkv0La32a/RleILXy6JMLBb7UmS3QCatg/F/0N9/5b0i5j6IKcA==
+"@tanstack/query-core@4.24.6":
+  version "4.24.6"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-4.24.6.tgz#8f102bc922308f0c6c5ddea34fe253688314265a"
+  integrity sha512-Tfru6YTDTCpX7dKVwHp/sosw/dNjEdzrncduUjIkQxn7n7u+74HT2ZrGtwwrU6Orws4x7zp3FKRqBPWVVhpx9w==
 
-"@tanstack/react-query-devtools@^4.20.4":
-  version "4.20.4"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query-devtools/-/react-query-devtools-4.20.4.tgz#a58c742faacc03a0735006eb30e6a1f215957310"
-  integrity sha512-4e4wOmqAYjLS1RQ7gRBLCk3koCjbOfCMvbxS3CPCAN5+FLBemLAvoYvFJ/i/7DPsIsltGwsnd7YAFFGMzdSx7A==
+"@tanstack/react-query-devtools@^4.24.6":
+  version "4.24.6"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query-devtools/-/react-query-devtools-4.24.6.tgz#b2232d598d8141054466d7bb446158feaaf2a133"
+  integrity sha512-d8CN4ZTtLkdCNi9x4Hogma0fdhlv7ckknv/RLuV4nbUciUoZEvhg1cI0+vp/1aY4W3jq9vH0BD/eUQKecgY15Q==
   dependencies:
     "@tanstack/match-sorter-utils" "^8.7.0"
     superjson "^1.10.0"
     use-sync-external-store "^1.2.0"
 
-"@tanstack/react-query@^4.20.4":
-  version "4.20.4"
-  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-4.20.4.tgz#562b34fb919adea884eccaba2b5be50e8ba7fb16"
-  integrity sha512-SJRxx13k/csb9lXAJfycgVA1N/yU/h3bvRNWP0+aHMfMjmbyX82FdoAcckDBbOdEyAupvb0byelNHNeypCFSyA==
+"@tanstack/react-query@^4.24.6":
+  version "4.24.6"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-4.24.6.tgz#ec406e59314ae13d31a2c82eed0043bb0b67ba2e"
+  integrity sha512-pbJUVZCS4pcXS0kZiY+mVJ01ude0GrH5OXT2g9whcqSveRG/YVup/XdA9NdRpSMGkP2HxDRxxRNsTXkniWeIIA==
   dependencies:
-    "@tanstack/query-core" "4.20.4"
+    "@tanstack/query-core" "4.24.6"
     use-sync-external-store "^1.2.0"
+
+"@tsconfig/create-react-app@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@tsconfig/create-react-app/-/create-react-app-1.0.3.tgz#2dd6ef3adb18a551b3e13aee5d18efe517069d4b"
+  integrity sha512-sAsKAmKzWJlLWpCTyaUHUhqkQEAGAIaNs90sVbZsBhqBTNTnLkcZUr7U5HLI9EUN8QppfkxfGjvaATSgZQhiGQ==
 
 "@types/cookie@^0.4.1":
   version "0.4.1"
@@ -487,17 +492,17 @@
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.5.tgz#5f19d2b85a98e9558036f6a3cacc8819420f05cf"
   integrity sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==
 
-"@types/react-dom@^17.0.17":
-  version "17.0.18"
-  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-17.0.18.tgz#8f7af38f5d9b42f79162eea7492e5a1caff70dc2"
-  integrity sha512-rLVtIfbwyur2iFKykP2w0pl/1unw26b5td16d5xMgp7/yjTHomkyxPYChFoCr/FtEX1lN9wY6lFj1qvKdS5kDw==
+"@types/react-dom@^18.0.11":
+  version "18.0.11"
+  resolved "https://registry.yarnpkg.com/@types/react-dom/-/react-dom-18.0.11.tgz#321351c1459bc9ca3d216aefc8a167beec334e33"
+  integrity sha512-O38bPbI2CWtgw/OoQoY+BRelw7uysmXbWvw3nLWO21H1HSh+GOlqPuXshJfjmpNlKiiSDG9cc1JZAaMmVdcTlw==
   dependencies:
-    "@types/react" "^17"
+    "@types/react" "*"
 
-"@types/react@^17", "@types/react@^17.0.47":
-  version "17.0.52"
-  resolved "https://registry.yarnpkg.com/@types/react/-/react-17.0.52.tgz#10d8b907b5c563ac014a541f289ae8eaa9bf2e9b"
-  integrity sha512-vwk8QqVODi0VaZZpDXQCmEmiOuyjEFPY7Ttaw5vjM112LOq37yz1CDJGrRJwA1fYEq4Iitd5rnjd1yWAc/bT+A==
+"@types/react@*", "@types/react@^18.0.28":
+  version "18.0.28"
+  resolved "https://registry.yarnpkg.com/@types/react/-/react-18.0.28.tgz#accaeb8b86f4908057ad629a26635fe641480065"
+  integrity sha512-RD0ivG1kEztNBdoAK7lekI9M+azSnitIn85h4iOiaLjaTrMjzslhaqCGaI4IyCJ1RljWiLCEu4jyrLLgqxBTew==
   dependencies:
     "@types/prop-types" "*"
     "@types/scheduler" "*"
@@ -1152,10 +1157,10 @@ ms@2.1.2:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-msw@^0.49.2:
-  version "0.49.2"
-  resolved "https://registry.yarnpkg.com/msw/-/msw-0.49.2.tgz#c815fa514a1b3532e3d3af01d308bb63329ad1e2"
-  integrity sha512-70/E10f+POE2UmMw16v8PnKatpZplpkUwVRLBqiIdimpgaC3le7y2yOq9JmOrL15jpwWM5wAcPTOj0f550LI3g==
+msw@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/msw/-/msw-1.0.1.tgz#f55b36b3d7e911ee75a73d6346585e01af3fbcfb"
+  integrity sha512-fBwQRCmf+jh0zlGlasBfpCaxLqb4QLMsY1Q+nkXkO0nnUYopl50NcNRvP4V+TAiqOwJSd0LrQ5NcJqwbrnTBqw==
   dependencies:
     "@mswjs/cookies" "^0.2.2"
     "@mswjs/interceptors" "^0.17.5"
@@ -1173,7 +1178,7 @@ msw@^0.49.2:
     node-fetch "^2.6.7"
     outvariant "^1.3.0"
     path-to-regexp "^6.2.0"
-    strict-event-emitter "^0.2.6"
+    strict-event-emitter "^0.4.3"
     type-fest "^2.19.0"
     yargs "^17.3.1"
 
@@ -1420,12 +1425,17 @@ source-map-js@^1.0.2:
   resolved "https://registry.yarnpkg.com/source-map-js/-/source-map-js-1.0.2.tgz#adbc361d9c62df380125e7f161f71c826f1e490c"
   integrity sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==
 
-strict-event-emitter@^0.2.4, strict-event-emitter@^0.2.6:
+strict-event-emitter@^0.2.4:
   version "0.2.8"
   resolved "https://registry.yarnpkg.com/strict-event-emitter/-/strict-event-emitter-0.2.8.tgz#b4e768927c67273c14c13d20e19d5e6c934b47ca"
   integrity sha512-KDf/ujU8Zud3YaLtMCcTI4xkZlZVIYxTLr+XIULexP+77EEVWixeXroLUXQXiVtH4XH2W7jr/3PT1v3zBuvc3A==
   dependencies:
     events "^3.3.0"
+
+strict-event-emitter@^0.4.3:
+  version "0.4.6"
+  resolved "https://registry.yarnpkg.com/strict-event-emitter/-/strict-event-emitter-0.4.6.tgz#ff347c8162b3e931e3ff5f02cfce6772c3b07eb3"
+  integrity sha512-12KWeb+wixJohmnwNFerbyiBrAlq5qJLwIt38etRtKtmmHyDSoGlIqFE9wx+4IwG0aDjI7GV8tc8ZccjWZZtTg==
 
 string-width@^4.1.0, string-width@^4.2.0, string-width@^4.2.3:
   version "4.2.3"
