@@ -1,4 +1,4 @@
-import { configureAuth } from '../..';
+import { configureAuth } from '../../..';
 import {
   getUserProfile,
   registerWithEmailAndPassword,
