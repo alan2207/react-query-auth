@@ -12,11 +12,8 @@
     "src"
   ],
   "exports": {
-    "default": "./dist/index.mjs",
     "require": "./dist/index.js",
-    "import": "./dist/index.mjs",
-    "types": "./dist/index.d.ts",
-    "node": "./dist/index.js"
+    "import": "./dist/index.mjs"
   },
   "engines": {
     "node": ">=16"
