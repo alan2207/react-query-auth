@@ -138,21 +138,9 @@ A configuration object that specifies the functions and keys to be used for vari
   - **`children`**:
     A React node that is rendered when the authenticated user is successfully fetched.
 
-## Demo:
+## Examples:
 
-To try out the demo app, navigate to the `example` folder and install the dependencies by running:
-
-```bash
-cd example && npm install
-```
-
-Then you can start the demo app by running:
-
-```bash
-npm run start
-```
-
-Then open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+To try out the library, check out the `examples` folder.
 
 ## Contributing
 

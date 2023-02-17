@@ -3,7 +3,7 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
 import App from './App';
-import { worker } from './mock/api-server';
+import { worker } from './mocks/api-server';
 
 worker.start();
 
