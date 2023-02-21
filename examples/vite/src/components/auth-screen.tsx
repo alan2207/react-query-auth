@@ -5,7 +5,7 @@ import {
   RegisterCredentials,
   useLogin,
   useRegister,
-} from '../lib/auth';
+} from '@/lib/auth';
 
 import { Button, Form, Input } from './ui';
 

@@ -5,25 +5,22 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "cross-env NODE_ENV=production vite --port=3000",
-    "build": "cross-env NODE_ENV=production vite build"
+    "start": "vite --port=3000",
+    "build": "vite build"
   },
   "dependencies": {
     "@tanstack/react-query": "^4.24.6",
     "@tanstack/react-query-devtools": "^4.24.6",
     "msw": "^1.0.1",
-    "react-app-polyfill": "^3.0.0"
-  },
-  "alias": {
-    "react": "../node_modules/react",
-    "react-dom": "../node_modules/react-dom/profiling",
-    "scheduler/tracing": "../node_modules/scheduler/tracing-profiling"
+    "react-app-polyfill": "^3.0.0",
+    "react-query-auth": "2.1.1"
   },
   "devDependencies": {
-    "@tsconfig/create-react-app": "^1.0.3",
+    "@types/node": "^18.14.0",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
-    "cross-env": "^7.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "typescript": "^4",
     "vite": "latest",
     "vite-preset-react": "latest"

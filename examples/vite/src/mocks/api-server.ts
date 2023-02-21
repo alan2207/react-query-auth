@@ -1,5 +1,5 @@
 import { setupWorker, rest } from 'msw';
-import { storage } from '../lib/utils';
+import { storage } from '@/lib/utils';
 import { DBUser, getUser, setUser } from './db';
 
 const handlers = [

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { useLogout, useUser } from '../lib/auth';
+import { useLogout, useUser } from '@/lib/auth';
 
 import { Button } from './ui';
 
