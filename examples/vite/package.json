@@ -2,15 +2,15 @@
   "name": "example",
   "private": true,
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "vite --port=3000",
+    "start": "cross-env NODE_ENV=production vite --port=3000",
     "build": "vite build"
   },
   "dependencies": {
     "@tanstack/react-query": "^4.24.6",
     "@tanstack/react-query-devtools": "^4.24.6",
+    "cross-env": "^7.0.3",
     "msw": "^1.0.1",
     "react-app-polyfill": "^3.0.0",
     "react-query-auth": "2.1.1"
