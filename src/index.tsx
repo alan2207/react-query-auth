@@ -115,10 +115,12 @@ export function configureAuth<
     children,
     renderLoading,
     renderUnauthenticated,
+    renderError = (status) => <div>Unhandled status: {status}</div>,
   }: {
     children: React.ReactNode;
     renderLoading: () => JSX.Element;
     renderUnauthenticated?: () => JSX.Element;
+    renderError?: (status: string) => JSX.Element;
   }) {
     const { isSuccess, isFetched, status, data } = useUser();
 
@@ -133,7 +135,7 @@ export function configureAuth<
       return renderLoading();
     }
 
-    return <div>Unhandled status: {status}</div>;
+    return renderError(status);
   }
 
   return {
