@@ -1,4 +1,4 @@
-import { configureAuth } from '../../../src/index';
+import { configureAuth } from 'react-query-auth';
 import {
   getUserProfile,
   registerWithEmailAndPassword,
