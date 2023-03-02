@@ -135,8 +135,13 @@ A configuration object that specifies the functions and keys to be used for vari
   - **`renderUnauthenticated`**:
     A function that is called when the authenticated user is not authenticated. It should return a React node that is rendered when the user is not authenticated.
 
+  - **`renderError`**:
+    A function that is called when an error is thrown during the authentication request. It should return a React node that is rendered when the error occurs. It receives the `Error` object which can be used during rendering. Defaults to `(error: Error) => <>{JSON.stringify(error)}</>`.
+
   - **`children`**:
     A React node that is rendered when the authenticated user is successfully fetched.
+
+If you need a more custom loading implementation, you can create your own `AuthLoader` component and use the `useUser` hook to fetch the authenticated user and handle the loading and error states yourself.
 
 ## Examples:
 
