@@ -45,7 +45,11 @@ export function configureAuth<
       UseQueryOptions<User, Error, User, QueryKey>,
       'queryKey' | 'queryFn'
     >
-  ) => useQuery(userKey, userFn, options);
+  ) => useQuery({
+    queryKey: userKey,
+    queryFn: userFn,
+    ...options
+  });
 
   const useLogin = (
     options?: Omit<
