@@ -1,6 +1,6 @@
 {
   "name": "react-query-auth",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "author": "alan2207",
   "license": "MIT",
   "repository": "alan2207/react-query-auth",
@@ -15,7 +15,6 @@
     "require": "./dist/index.js",
     "import": "./dist/index.mjs",
     "types": "./dist/index.d.ts"
-
   },
   "engines": {
     "node": ">=16"
