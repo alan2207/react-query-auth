@@ -1,0 +1,65 @@
+{
+	"$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
+	"formatter": {
+		"enabled": true,
+		"formatWithErrors": false,
+		"ignore": ["examples"],
+		"indentStyle": "tab",
+		"lineEnding": "lf",
+		"lineWidth": 120
+	},
+	"javascript": {
+		"formatter": {
+			"indentStyle": "tab",
+			"quoteStyle": "single",
+			"semicolons": "asNeeded",
+			"trailingCommas": "es5"
+		}
+	},
+	"linter": {
+		"enabled": true,
+		"ignore": ["examples", "package.json"],
+		"rules": {
+			"a11y": {
+				"recommended": true
+			},
+			"complexity": {
+				"recommended": true
+			},
+			"correctness": {
+				"noUnusedFunctionParameters": "error",
+				"noUnusedImports": "error",
+				"noUnusedLabels": "error",
+				"noUnusedVariables": "error",
+				"recommended": true
+			},
+			"nursery": {
+				"recommended": true
+			},
+			"performance": {
+				"recommended": true
+			},
+			"recommended": true,
+			"security": {
+				"recommended": true
+			},
+			"style": {
+				"recommended": true
+			},
+			"suspicious": {
+				"noConsole": "error",
+				"recommended": true
+			}
+		}
+	},
+	"organizeImports": {
+		"enabled": true,
+		"ignore": ["examples", "package.json"]
+	},
+	"vcs": {
+		"clientKind": "git",
+		"defaultBranch": "main",
+		"enabled": true,
+		"useIgnoreFile": true
+	}
+}

@@ -143,6 +143,9 @@ A configuration object that specifies the functions and keys to be used for vari
 
 If you need a more custom loading implementation, you can create your own `AuthLoader` component and use the `useUser` hook to fetch the authenticated user and handle the loading and error states yourself.
 
+
+If none of the provided hooks or components meet your needs, feel free to copy the source code into your project and modify it to your liking.
+
 ## Examples:
 
 To try out the library, check out the `examples` folder.
@@ -157,4 +160,4 @@ To try out the library, check out the `examples` folder.
 
 ## LICENSE
 
-MIT
+[MIT](/LICENSE)
