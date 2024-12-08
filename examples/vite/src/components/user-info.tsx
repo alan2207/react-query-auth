@@ -1,4 +1,4 @@
-import * as React from 'react';
+
 
 import { useLogout, useUser } from '@/lib/auth';
 
@@ -11,7 +11,7 @@ export const UserInfo = () => {
   return (
     <>
       <h2>Welcome {user.data?.name}</h2>
-      <Button disabled={logout.isLoading} onClick={() => logout.mutate({})}>
+      <Button disabled={logout.isPending} onClick={() => logout.mutate({})}>
         Log Out
       </Button>
     </>

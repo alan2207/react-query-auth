@@ -1,10 +1,20 @@
-import 'react-app-polyfill/ie11';
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 
-import App from '@/App';
-import { worker } from '@/mocks/api-server';
+import App from './src/App';
+import { worker } from './src/mocks/api-server';
 
-worker.start();
 
-ReactDOM.render(<App />, document.getElementById('root'));
+const root = document.getElementById('root');
+
+if (!root) {
+  throw new Error('Root element not found');
+}
+
+worker.start().then(() => {
+	createRoot(root).render(
+	  <React.StrictMode>
+		<App />
+	  </React.StrictMode>,
+	);
+  });
